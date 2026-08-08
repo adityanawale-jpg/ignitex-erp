@@ -1,0 +1,1176 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model audit_log {
+  id          Int          @id @default(autoincrement())
+  user_id     Int?
+  employee_id String?      @db.VarChar(50)
+  full_name   String?      @db.VarChar(200)
+  action      String       @db.VarChar(50)
+  module      String       @db.VarChar(100)
+  record_id   String?      @db.VarChar(100)
+  description String?
+  old_values  Json?
+  new_values  Json?
+  ip_address  String?      @db.VarChar(50)
+  created_at  DateTime     @default(now()) @db.Timestamp(6)
+  user_master user_master? @relation(fields: [user_id], references: [user_id], onUpdate: NoAction)
+
+  @@index([action], map: "idx_audit_log_action")
+  @@index([created_at(sort: Desc)], map: "idx_audit_log_created")
+  @@index([module], map: "idx_audit_log_module")
+  @@index([user_id], map: "idx_audit_log_user")
+}
+
+model bom_fg {
+  id               Int             @id @default(autoincrement())
+  variant_id       Int
+  bom_version      String          @default("1.0") @db.VarChar(20)
+  bom_status       String          @default("DRAFT") @db.VarChar(50)
+  gross_weight     Decimal?        @default(0) @db.Decimal(12, 6)
+  net_weight       Decimal?        @default(0) @db.Decimal(12, 6)
+  min_weight       Decimal?        @db.Decimal(12, 6)
+  max_weight       Decimal?        @db.Decimal(12, 6)
+  stone_cts        Decimal?        @default(0) @db.Decimal(12, 6)
+  stone_gms        Decimal?        @default(0) @db.Decimal(12, 6)
+  effective_from   DateTime?       @db.Date
+  effective_to     DateTime?       @db.Date
+  remarks          String?
+  submitted_by     Int?
+  submitted_at     DateTime?       @db.Timestamp(6)
+  approved_by      Int?
+  approved_at      DateTime?       @db.Timestamp(6)
+  rejected_by      Int?
+  rejected_at      DateTime?       @db.Timestamp(6)
+  rejection_reason String?
+  is_active        Boolean?        @default(true)
+  created_by       Int
+  updated_by       Int?
+  created_at       DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at       DateTime?       @default(now()) @db.Timestamp(6)
+  component_weight Decimal?        @default(0) @db.Decimal(12, 6)
+  item_variant     fg_item_variant @relation(fields: [variant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  bom_fg_detail    bom_fg_detail[]
+
+  @@index([bom_status], map: "idx_bom_fg_status")
+  @@index([variant_id], map: "idx_bom_fg_variant")
+}
+
+model bom_fg_detail {
+  id               Int       @id @default(autoincrement())
+  bom_id           Int
+  bom_type         String    @db.VarChar(50)
+  seq_no           Int       @default(1)
+  item_id          Int
+  item_code        String?   @db.VarChar(300)
+  item_name        String?   @db.VarChar(300)
+  item_quantity    Decimal?  @default(1) @db.Decimal(12, 4)
+  uom1_code        String?   @db.VarChar(50)
+  item_weight      Decimal?  @db.Decimal(12, 6)
+  uom2_code        String?   @db.VarChar(50)
+  purity_code      String?   @db.VarChar(50)
+  pure_weight      Decimal?  @db.Decimal(12, 6)
+  weight_gms       Decimal?  @db.Decimal(12, 6)
+  remarks          String?
+  is_active        Boolean?  @default(true)
+  created_by       Int?
+  updated_by       Int?
+  created_at       DateTime? @default(now()) @db.Timestamp(6)
+  updated_at       DateTime? @default(now()) @db.Timestamp(6)
+  gross_weight     Decimal?  @default(0) @db.Decimal(12, 6)
+  net_weight       Decimal?  @default(0) @db.Decimal(12, 6)
+  stone_cts        Decimal?  @default(0) @db.Decimal(12, 6)
+  stone_gms        Decimal?  @default(0) @db.Decimal(12, 6)
+  item_type        String?   @db.VarChar(50)
+  component_weight Decimal?  @default(0) @db.Decimal(12, 6)
+  bom_fg           bom_fg    @relation(fields: [bom_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([bom_id], map: "idx_bom_fg_detail_bom")
+  @@index([bom_type], map: "idx_bom_fg_detail_type")
+}
+
+model customer_address_info {
+  id                             Int             @id @default(autoincrement())
+  customer_id                    Int
+  adrs_name                      String?         @db.VarChar(255)
+  adrs_country_code              String?         @db.VarChar(10)
+  adrs_1                         String?         @db.VarChar(255)
+  adrs_2                         String?         @db.VarChar(255)
+  adrs_3                         String?         @db.VarChar(255)
+  adrs_city_name                 String?         @db.VarChar(100)
+  adrs_state_code                String?         @db.VarChar(10)
+  adrs_pincode                   String?         @db.VarChar(20)
+  adrs_email                     String?         @db.VarChar(255)
+  adrs_phone_number_country_code String?         @db.VarChar(10)
+  adrs_phone_number              String?         @db.VarChar(20)
+  adrs_extension                 String?         @db.VarChar(10)
+  created_at                     DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at                     DateTime?       @default(now()) @db.Timestamp(6)
+  customer_master                customer_master @relation(fields: [customer_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([customer_id], map: "idx_cust_address_cid")
+}
+
+model customer_contact_info {
+  id                Int             @id @default(autoincrement())
+  customer_id       Int
+  cont_first_name   String?         @db.VarChar(100)
+  cont_last_name    String?         @db.VarChar(100)
+  cont_email        String?         @db.VarChar(255)
+  cont_job_title    String?         @db.VarChar(100)
+  cont_country_code String?         @db.VarChar(10)
+  cont_mobile       String?         @db.VarChar(20)
+  cont_is_admin     Boolean?        @default(true)
+  created_at        DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at        DateTime?       @default(now()) @db.Timestamp(6)
+  customer_master   customer_master @relation(fields: [customer_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([customer_id], map: "idx_cust_contact_cid")
+}
+
+model customer_master {
+  id                          Int                           @id @default(autoincrement())
+  customer_code               String?                       @unique @db.VarChar(20)
+  customer_name               String?                       @db.VarChar(255)
+  customer_company_name       String?                       @db.VarChar(255)
+  customer_display_name       String?                       @db.VarChar(255)
+  bus_relationship            String?                       @db.VarChar(100)
+  country_code                String?                       @db.VarChar(10)
+  pan_card                    String?                       @db.VarChar(20)
+  organization_type           String?                       @db.VarChar(100)
+  customer_type               String?                       @db.VarChar(100)
+  is_msme_reg                 Boolean?                      @default(false)
+  website_url                 String?                       @db.VarChar(500)
+  upload_doc                  String?
+  tax_payer_type              String?                       @db.VarChar(100)
+  gstin_status                String?                       @db.VarChar(100)
+  gstin_uin_number            String?                       @db.VarChar(20)
+  place_of_supply             String?                       @db.VarChar(100)
+  gst_treatment               String?                       @db.VarChar(100)
+  credit_limit_by_value       Decimal?                      @default(0) @db.Decimal(18, 2)
+  credit_limit_by_grams       Decimal?                      @default(0) @db.Decimal(14, 4)
+  payment_terms               String?                       @db.VarChar(255)
+  is_active                   Boolean?                      @default(true)
+  created_by                  Int?
+  updated_by                  Int?
+  created_at                  DateTime?                     @default(now()) @db.Timestamp(6)
+  updated_at                  DateTime?                     @default(now()) @db.Timestamp(6)
+  deactivation_reason         String?                       @db.VarChar(500)
+  deactivated_at              DateTime?                     @db.Timestamp(6)
+  customer_address_info       customer_address_info[]
+  customer_contact_info       customer_contact_info[]
+  customer_price_master_metal customer_price_master_metal[]
+  customer_price_master_stone customer_price_master_stone[]
+
+  @@index([is_active], map: "idx_customer_active")
+  @@index([customer_code], map: "idx_customer_code")
+  @@index([customer_company_name], map: "idx_customer_name")
+}
+
+model design_master {
+  id                Int               @id @default(autoincrement())
+  design_code       String            @unique @db.VarChar(50)
+  design_no         String            @db.VarChar(50)
+  collection_name   String?           @db.VarChar(100)
+  product_name      String?           @db.VarChar(100)
+  design_attributes Json?             @default("{}")
+  design_image      String?           @db.VarChar(500)
+  is_active         Boolean?          @default(true)
+  created_at        DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at        DateTime?         @default(now()) @db.Timestamp(6)
+  design_images     design_images[]
+  fg_item_master    fg_item_master[]
+  fin_item_master   fin_item_master[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model erp_settings {
+  key        String    @id @db.VarChar(100)
+  value      String?
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model login_history {
+  id          Int          @id @default(autoincrement())
+  user_id     Int?
+  employee_id String?      @db.VarChar(20)
+  login_time  DateTime?    @default(now()) @db.Timestamp(6)
+  logout_time DateTime?    @db.Timestamp(6)
+  ip_address  String?      @db.VarChar(50)
+  user_agent  String?
+  status      String?      @default("success") @db.VarChar(20)
+  remarks     String?      @db.VarChar(500)
+  user_master user_master? @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([login_time], map: "idx_login_history_time")
+  @@index([user_id], map: "idx_login_history_user")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model master_lookup {
+  id                  Int       @id @default(autoincrement())
+  lookup_type         String    @db.VarChar(100)
+  lookup_code         String    @db.VarChar(100)
+  lookup_name         String    @db.VarChar(200)
+  lookup_value        String?   @db.VarChar(500)
+  display_order       Int?      @default(0)
+  parent_code         String?   @db.VarChar(100)
+  is_active           Boolean?  @default(true)
+  created_at          DateTime? @default(now()) @db.Timestamp(6)
+  updated_at          DateTime? @default(now()) @db.Timestamp(6)
+  deactivation_reason String?   @db.VarChar(500)
+  deactivated_at      DateTime? @db.Timestamp(6)
+
+  @@unique([lookup_type, lookup_code])
+  @@index([lookup_type], map: "idx_master_lookup_type")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model menu_master {
+  id                Int                 @id @default(autoincrement())
+  parent_id         Int?
+  menu_code         String              @unique @db.VarChar(100)
+  menu_name         String              @db.VarChar(200)
+  menu_url          String?             @db.VarChar(500)
+  menu_icon         String?             @db.VarChar(100)
+  menu_order        Int?                @default(0)
+  menu_level        Int?                @default(1)
+  is_active         Boolean?            @default(true)
+  created_at        DateTime?           @default(now()) @db.Timestamp(6)
+  menu_master       menu_master?        @relation("menu_masterTomenu_master", fields: [parent_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  other_menu_master menu_master[]       @relation("menu_masterTomenu_master")
+  role_menu_mapping role_menu_mapping[]
+  user_menu_mapping user_menu_mapping[]
+
+  @@index([parent_id], map: "idx_menu_master_parent")
+}
+
+model metal_master {
+  id                  Int       @id(map: "component_item_master_pkey") @default(autoincrement())
+  metal_code          String?   @unique(map: "component_item_master_comp_code_key") @db.VarChar(500)
+  metal_type          String?   @db.VarChar(100)
+  karat_color         String?   @db.VarChar(100)
+  purity              String?   @db.VarChar(100)
+  metal_name          String?   @db.VarChar(100)
+  is_active           Boolean?  @default(true)
+  created_by          Int?
+  updated_by          Int?
+  created_at          DateTime? @default(now()) @db.Timestamp(6)
+  updated_at          DateTime? @default(now()) @db.Timestamp(6)
+  deactivation_reason String?   @db.VarChar(500)
+  deactivated_at      DateTime? @db.Timestamp(6)
+
+  @@index([is_active], map: "idx_metal_master_active")
+  @@index([metal_code], map: "idx_metal_master_code")
+}
+
+model party_master {
+  id              Int       @id @default(autoincrement())
+  party_code      String    @unique @db.VarChar(50)
+  party_name      String    @db.VarChar(200)
+  party_type      String    @db.VarChar(20)
+  phone           String?   @db.VarChar(20)
+  email           String?   @db.VarChar(200)
+  address         String?
+  city            String?   @db.VarChar(100)
+  state           String?   @db.VarChar(100)
+  pincode         String?   @db.VarChar(20)
+  gstin           String?   @db.VarChar(20)
+  pan             String?   @db.VarChar(20)
+  credit_limit    Decimal?  @default(0) @db.Decimal(15, 2)
+  opening_balance Decimal?  @default(0) @db.Decimal(15, 2)
+  is_active       Boolean?  @default(true)
+  created_at      DateTime? @default(now()) @db.Timestamp(6)
+  updated_at      DateTime? @default(now()) @db.Timestamp(6)
+
+  @@index([party_code], map: "idx_party_master_code")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model project_config {
+  id          Int       @id @default(autoincrement())
+  key_code    String    @unique @db.VarChar(100)
+  key_value   String
+  description String?
+  config_type String?   @default("query") @db.VarChar(50)
+  is_active   Boolean?  @default(true)
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  updated_at  DateTime? @default(now()) @db.Timestamp(6)
+
+  @@index([key_code], map: "idx_project_config_key")
+}
+
+model role_master {
+  id                  Int                 @id @default(autoincrement())
+  role_code           String              @unique @db.VarChar(50)
+  role_name           String              @db.VarChar(100)
+  description         String?
+  is_active           Boolean?            @default(true)
+  created_at          DateTime?           @default(now()) @db.Timestamp(6)
+  updated_at          DateTime?           @default(now()) @db.Timestamp(6)
+  deactivation_reason String?             @db.VarChar(500)
+  deactivated_at      DateTime?           @db.Timestamp(6)
+  role_menu_mapping   role_menu_mapping[]
+  user_role           user_role[]
+  wf_step             wf_step[]
+}
+
+model role_menu_mapping {
+  id          Int         @id @default(autoincrement())
+  role_id     Int
+  menu_id     Int
+  can_view    Boolean     @default(true)
+  can_create  Boolean     @default(false)
+  can_update  Boolean     @default(false)
+  can_delete  Boolean     @default(false)
+  can_print   Boolean     @default(false)
+  can_export  Boolean     @default(false)
+  is_active   Boolean?    @default(true)
+  menu_master menu_master @relation(fields: [menu_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  role_master role_master @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([role_id, menu_id])
+  @@index([role_id], map: "idx_role_menu_role")
+}
+
+model stone_item_master {
+  id                  Int       @id @default(autoincrement())
+  stn_code            String    @unique @db.VarChar(300)
+  stn_type            String?   @db.VarChar(100)
+  stn_shape           String?   @db.VarChar(100)
+  stn_quality         String?   @db.VarChar(100)
+  stn_color           String?   @db.VarChar(100)
+  stn_size            String?   @db.VarChar(100)
+  is_active           Boolean?  @default(true)
+  created_by          Int?
+  updated_by          Int?
+  created_at          DateTime? @default(now()) @db.Timestamp(6)
+  updated_at          DateTime? @default(now()) @db.Timestamp(6)
+  deactivation_reason String?   @db.VarChar(500)
+  deactivated_at      DateTime? @db.Timestamp(6)
+  std_cts             Decimal?  @db.Decimal(12, 4)
+
+  @@index([is_active], map: "idx_stone_item_active")
+  @@index([stn_code], map: "idx_stone_item_code")
+  @@index([stn_type], map: "idx_stone_item_type")
+}
+
+model supplier_address_info {
+  id                             Int             @id @default(autoincrement())
+  supplier_id                    Int
+  adrs_name                      String?         @db.VarChar(255)
+  adrs_country_code              String?         @db.VarChar(10)
+  adrs_1                         String?         @db.VarChar(255)
+  adrs_2                         String?         @db.VarChar(255)
+  adrs_3                         String?         @db.VarChar(255)
+  adrs_city_name                 String?         @db.VarChar(100)
+  adrs_state_code                String?         @db.VarChar(10)
+  adrs_pincode                   String?         @db.VarChar(20)
+  adrs_email                     String?         @db.VarChar(255)
+  adrs_phone_number_country_code String?         @db.VarChar(10)
+  adrs_phone_number              String?         @db.VarChar(20)
+  adrs_extension                 String?         @db.VarChar(10)
+  created_at                     DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at                     DateTime?       @default(now()) @db.Timestamp(6)
+  supplier_master                supplier_master @relation(fields: [supplier_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([supplier_id], map: "idx_supp_address_sid")
+}
+
+model supplier_bank_detail {
+  id                         Int             @id @default(autoincrement())
+  supplier_id                Int
+  bank_country_code          String?         @db.VarChar(10)
+  bank_name                  String?         @db.VarChar(255)
+  bank_branch_name           String?         @db.VarChar(255)
+  bank_account_number        String?         @db.VarChar(50)
+  bank_account_holder        String?         @db.VarChar(255)
+  bank_account_type          String?         @db.VarChar(50)
+  bank_account_currency_code String?         @db.VarChar(10)
+  created_at                 DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at                 DateTime?       @default(now()) @db.Timestamp(6)
+  supplier_master            supplier_master @relation(fields: [supplier_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([supplier_id], map: "idx_supp_bank_sid")
+}
+
+model supplier_contact_info {
+  id                      Int             @id @default(autoincrement())
+  supplier_id             Int
+  cont_first_name         String?         @db.VarChar(100)
+  cont_last_name          String?         @db.VarChar(100)
+  cont_email              String?         @db.VarChar(255)
+  cont_job_title          String?         @db.VarChar(100)
+  cont_country_code       String?         @db.VarChar(10)
+  cont_mobile             String?         @db.VarChar(20)
+  cont_is_admin           Boolean?        @default(true)
+  cont_is_supplier_portal Boolean?        @default(true)
+  created_at              DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at              DateTime?       @default(now()) @db.Timestamp(6)
+  supplier_master         supplier_master @relation(fields: [supplier_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([supplier_id], map: "idx_supp_contact_sid")
+}
+
+model supplier_master {
+  id                     Int                      @id @default(autoincrement())
+  vendor_code            String?                  @unique @db.VarChar(20)
+  vendor_company_name    String?                  @db.VarChar(255)
+  bus_relationship       String?                  @db.VarChar(100)
+  country_code           String?                  @db.VarChar(10)
+  pan_card               String?                  @db.VarChar(20)
+  organization_type      String?                  @db.VarChar(100)
+  vendor_type            String?                  @db.VarChar(100)
+  is_msme_reg            Boolean?                 @default(true)
+  vendor_url             String?                  @db.VarChar(500)
+  upload_doc             String?
+  gstin_uin_number       String?                  @db.VarChar(20)
+  place_of_supply        String?                  @db.VarChar(100)
+  msme_udyam_reg_number  String?                  @db.VarChar(50)
+  gst_treatment          String?                  @db.VarChar(100)
+  is_active              Boolean?                 @default(true)
+  created_by             Int?
+  updated_by             Int?
+  created_at             DateTime?                @default(now()) @db.Timestamp(6)
+  updated_at             DateTime?                @default(now()) @db.Timestamp(6)
+  deactivation_reason    String?                  @db.VarChar(500)
+  deactivated_at         DateTime?                @db.Timestamp(6)
+  supplier_address_info  supplier_address_info[]
+  supplier_bank_detail   supplier_bank_detail[]
+  supplier_contact_info  supplier_contact_info[]
+  supplier_rate_contract supplier_rate_contract[]
+
+  @@index([is_active], map: "idx_supplier_active")
+  @@index([vendor_code], map: "idx_supplier_code")
+  @@index([vendor_company_name], map: "idx_supplier_name")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model system_error_log {
+  id             Int          @id @default(autoincrement())
+  severity       String       @default("ERROR") @db.VarChar(20)
+  error_type     String?      @db.VarChar(200)
+  message        String
+  stack_trace    String?
+  request_path   String?      @db.VarChar(500)
+  request_method String?      @db.VarChar(10)
+  user_id        Int?
+  employee_id    String?      @db.VarChar(50)
+  ip_address     String?      @db.VarChar(50)
+  created_at     DateTime     @default(now()) @db.Timestamp(6)
+  user_master    user_master? @relation(fields: [user_id], references: [user_id], onUpdate: NoAction)
+
+  @@index([created_at(sort: Desc)], map: "idx_error_log_created")
+  @@index([severity], map: "idx_error_log_severity")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_master {
+  user_id                                               Int                 @id @default(autoincrement())
+  employee_id                                           String              @unique @db.VarChar(20)
+  password_hash                                         String              @db.VarChar(255)
+  first_name                                            String              @db.VarChar(50)
+  last_name                                             String?             @db.VarChar(50)
+  emp_email                                             String?             @unique @db.VarChar(255)
+  mobile_number                                         String?             @db.VarChar(20)
+  profile_image                                         String?             @db.VarChar(500)
+  department_id                                         String?             @db.VarChar(50)
+  designation                                           String?             @db.VarChar(100)
+  manager_id                                            Int?
+  user_status                                           Boolean?            @default(true)
+  jwt_token                                             String?
+  jwt_token_update                                      DateTime?           @db.Timestamptz(6)
+  start_date                                            DateTime?           @db.Date
+  expiry_date                                           DateTime?           @db.Date
+  timezone                                              String?             @default("Asia/Kolkata") @db.VarChar(50)
+  language                                              String?             @default("en") @db.VarChar(10)
+  last_login_at                                         DateTime?           @db.Timestamptz(6)
+  login_ip                                              String?             @db.VarChar(50)
+  created_by                                            Int?
+  created_at                                            DateTime?           @default(now()) @db.Timestamptz(6)
+  updated_by                                            Int?
+  updated_at                                            DateTime?           @default(now()) @db.Timestamptz(6)
+  inactive_date                                         DateTime?           @db.Date
+  inactive_reason                                       String?             @db.VarChar(500)
+  reset_otp_hash                                        String?             @db.VarChar(255)
+  reset_otp_expiry                                      DateTime?           @db.Timestamp(6)
+  reset_otp_attempts                                    Int?                @default(0)
+  reset_token                                           String?             @db.VarChar(255)
+  reset_token_expiry                                    DateTime?           @db.Timestamp(6)
+  activation_token                                      String?             @db.VarChar(255)
+  activation_token_expiry                               DateTime?           @db.Timestamp(6)
+  audit_log                                             audit_log[]
+  login_history                                         login_history[]
+  system_error_log                                      system_error_log[]
+  user_master_user_master_created_byTouser_master       user_master?        @relation("user_master_created_byTouser_master", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  other_user_master_user_master_created_byTouser_master user_master[]       @relation("user_master_created_byTouser_master")
+  user_master_user_master_manager_idTouser_master       user_master?        @relation("user_master_manager_idTouser_master", fields: [manager_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  other_user_master_user_master_manager_idTouser_master user_master[]       @relation("user_master_manager_idTouser_master")
+  user_master_user_master_updated_byTouser_master       user_master?        @relation("user_master_updated_byTouser_master", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  other_user_master_user_master_updated_byTouser_master user_master[]       @relation("user_master_updated_byTouser_master")
+  user_menu_mapping                                     user_menu_mapping[]
+  user_role                                             user_role[]
+  wf_step                                               wf_step[]
+
+  @@index([employee_id], map: "idx_user_master_employeeid")
+  @@index([jwt_token], map: "idx_user_master_jwt_token")
+}
+
+model user_role {
+  id          Int         @id @default(autoincrement())
+  user_id     Int
+  role_id     Int
+  is_default  Boolean?    @default(false)
+  created_at  DateTime?   @default(now()) @db.Timestamp(6)
+  role_master role_master @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_master user_master @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, role_id])
+  @@index([user_id], map: "idx_user_role_user")
+}
+
+model wf_config {
+  id            Int          @id @default(autoincrement())
+  wf_code       String       @unique @db.VarChar(50)
+  wf_name       String       @db.VarChar(200)
+  module_code   String       @db.VarChar(50)
+  description   String?
+  is_active     Boolean?     @default(true)
+  created_by    Int?
+  updated_by    Int?
+  created_at    DateTime?    @default(now()) @db.Timestamp(6)
+  updated_at    DateTime?    @default(now()) @db.Timestamp(6)
+  self_approval Boolean      @default(false)
+  wf_request    wf_request[]
+  wf_step       wf_step[]
+}
+
+model wf_history {
+  id         Int        @id @default(autoincrement())
+  request_id Int
+  step_no    Int
+  step_name  String?    @db.VarChar(200)
+  action     String     @db.VarChar(50)
+  action_by  Int
+  action_at  DateTime?  @default(now()) @db.Timestamp(6)
+  remarks    String?
+  wf_request wf_request @relation(fields: [request_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([request_id], map: "idx_wf_history_request")
+}
+
+model wf_request {
+  id           Int          @id @default(autoincrement())
+  config_id    Int
+  record_type  String       @db.VarChar(50)
+  record_id    Int
+  current_step Int          @default(1)
+  wf_status    String       @default("DRAFT") @db.VarChar(50)
+  created_by   Int?
+  updated_by   Int?
+  created_at   DateTime?    @default(now()) @db.Timestamp(6)
+  updated_at   DateTime?    @default(now()) @db.Timestamp(6)
+  wf_history   wf_history[]
+  wf_config    wf_config    @relation(fields: [config_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([record_type, record_id])
+  @@index([record_type, record_id], map: "idx_wf_request_record")
+  @@index([wf_status], map: "idx_wf_request_status")
+}
+
+model wf_step {
+  id          Int          @id @default(autoincrement())
+  config_id   Int
+  step_no     Int
+  step_name   String       @db.VarChar(200)
+  role_id     Int?
+  user_id     Int?
+  can_submit  Boolean?     @default(false)
+  can_approve Boolean?     @default(false)
+  can_reject  Boolean?     @default(false)
+  can_rfc     Boolean?     @default(false)
+  rfc_to_step Int?         @default(1)
+  is_active   Boolean?     @default(true)
+  created_at  DateTime?    @default(now()) @db.Timestamp(6)
+  wf_config   wf_config    @relation(fields: [config_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  role_master role_master? @relation(fields: [role_id], references: [id], onUpdate: NoAction)
+  user_master user_master? @relation(fields: [user_id], references: [user_id], onUpdate: NoAction)
+
+  @@unique([config_id, step_no])
+}
+
+model alloy_master {
+  id                             Int       @id @default(autoincrement())
+  alloy_code                     String    @unique @db.VarChar(50)
+  alloy_name                     String    @db.VarChar(200)
+  karat                          String?   @db.VarChar(20)
+  purity_pct                     Decimal?  @default(0) @db.Decimal(5, 2)
+  description                    String?   @db.VarChar(500)
+  is_active                      Boolean   @default(true)
+  created_by                     Int?
+  updated_by                     Int?
+  created_at                     DateTime  @default(now()) @db.Timestamp(6)
+  updated_at                     DateTime  @default(now()) @db.Timestamp(6)
+  deactivation_reason            String?   @db.VarChar(500)
+  deactivated_at                 DateTime? @db.Timestamp(6)
+  metal_category                 String?   @db.VarChar(100)
+  purity_target                  String?   @db.VarChar(200)
+  application_type               String?   @db.VarChar(200)
+  alloy_status                   String?   @db.VarChar(50)
+  with_silver                    String?   @db.VarChar(10)
+  silver_percentage              Decimal?  @db.Decimal(5, 2)
+  alloy_additives_type           String?   @db.VarChar(100)
+  alloy_density                  Decimal?  @db.Decimal(8, 3)
+  composition_remark             String?   @db.VarChar(500)
+  alloy_hardness                 String?   @db.VarChar(100)
+  tensile_strength               String?   @db.VarChar(100)
+  ductility_elongation           String?   @db.VarChar(100)
+  melting_range                  String?   @db.VarChar(100)
+  color_tone                     String?   @db.VarChar(100)
+  finish_behaviour               String?   @db.VarChar(100)
+  max_drawing_reduction          String?   @db.VarChar(100)
+  alloy_required                 String?   @db.VarChar(200)
+  breakage_sensitivity           String?   @db.VarChar(100)
+  melting_method                 String?   @db.VarChar(100)
+  alloy_cost_per_gram            Decimal?  @db.Decimal(12, 4)
+  indicative_alloy_cost_per_gram Decimal?  @db.Decimal(12, 4)
+  supplier_name                  String?   @db.VarChar(255)
+  alloy_brand                    String?   @db.VarChar(200)
+  alloy_hazardous                Boolean?  @default(false)
+
+  @@index([is_active], map: "idx_alloy_active")
+  @@index([alloy_code], map: "idx_alloy_code")
+}
+
+model bom_fin {
+  id               Int              @id @default(autoincrement())
+  variant_id       Int
+  bom_version      String           @default("1.0") @db.VarChar(20)
+  bom_status       String           @default("DRAFT") @db.VarChar(50)
+  gross_weight     Decimal?         @default(0) @db.Decimal(12, 6)
+  net_weight       Decimal?         @default(0) @db.Decimal(12, 6)
+  component_weight Decimal?         @default(0) @db.Decimal(12, 6)
+  min_weight       Decimal?         @db.Decimal(12, 6)
+  max_weight       Decimal?         @db.Decimal(12, 6)
+  stone_cts        Decimal?         @default(0) @db.Decimal(12, 6)
+  stone_gms        Decimal?         @default(0) @db.Decimal(12, 6)
+  effective_from   DateTime?        @db.Date
+  effective_to     DateTime?        @db.Date
+  remarks          String?
+  submitted_by     Int?
+  submitted_at     DateTime?        @db.Timestamp(6)
+  approved_by      Int?
+  approved_at      DateTime?        @db.Timestamp(6)
+  rejected_by      Int?
+  rejected_at      DateTime?        @db.Timestamp(6)
+  rejection_reason String?
+  is_active        Boolean?         @default(true)
+  created_by       Int
+  updated_by       Int?
+  created_at       DateTime?        @default(now()) @db.Timestamp(6)
+  updated_at       DateTime?        @default(now()) @db.Timestamp(6)
+  fin_item_variant fin_item_variant @relation(fields: [variant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  bom_fin_detail   bom_fin_detail[]
+
+  @@index([bom_status], map: "idx_bom_fin_status")
+  @@index([variant_id], map: "idx_bom_fin_variant")
+}
+
+model bom_fin_detail {
+  id               Int       @id @default(autoincrement())
+  bom_id           Int
+  bom_type         String    @db.VarChar(50)
+  item_type        String?   @db.VarChar(50)
+  seq_no           Int       @default(1)
+  item_id          Int
+  item_code        String?   @db.VarChar(300)
+  item_name        String?   @db.VarChar(300)
+  item_quantity    Decimal?  @default(1) @db.Decimal(12, 4)
+  uom1_code        String?   @db.VarChar(50)
+  item_weight      Decimal?  @db.Decimal(12, 6)
+  uom2_code        String?   @db.VarChar(50)
+  purity_code      String?   @db.VarChar(50)
+  pure_weight      Decimal?  @db.Decimal(12, 6)
+  weight_gms       Decimal?  @db.Decimal(12, 6)
+  gross_weight     Decimal?  @db.Decimal(12, 6)
+  net_weight       Decimal?  @db.Decimal(12, 6)
+  stone_cts        Decimal?  @db.Decimal(12, 6)
+  stone_gms        Decimal?  @db.Decimal(12, 6)
+  component_weight Decimal?  @default(0) @db.Decimal(12, 6)
+  remarks          String?
+  is_active        Boolean?  @default(true)
+  created_by       Int?
+  updated_by       Int?
+  created_at       DateTime? @default(now()) @db.Timestamp(6)
+  updated_at       DateTime? @default(now()) @db.Timestamp(6)
+  bom_fin          bom_fin   @relation(fields: [bom_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([bom_id], map: "idx_bom_fin_detail_bom")
+  @@index([bom_type], map: "idx_bom_fin_detail_type")
+}
+
+model component_master {
+  id                  Int       @id @default(autoincrement())
+  component_code      String?   @unique @db.VarChar(500)
+  component_type      String?   @db.VarChar(100)
+  component_name      String?   @db.VarChar(100)
+  component_desc      String?   @db.VarChar(100)
+  is_active           Boolean?  @default(true)
+  deactivation_reason String?   @db.VarChar(500)
+  deactivated_at      DateTime? @db.Timestamp(6)
+  created_by          Int?
+  updated_by          Int?
+  created_at          DateTime? @default(now()) @db.Timestamp(6)
+  updated_at          DateTime? @default(now()) @db.Timestamp(6)
+
+  @@index([is_active], map: "idx_comp_master_active")
+  @@index([component_code], map: "idx_comp_master_code")
+  @@index([component_type], map: "idx_comp_master_type")
+}
+
+model customer_price_master_metal {
+  id                    Int             @id @default(autoincrement())
+  customer_id           Int
+  sales_group_code      String          @db.VarChar(50)
+  itemtype              String          @db.VarChar(50)
+  sku_code              String          @db.VarChar(300)
+  karatage              String?         @db.VarChar(50)
+  rate_basis            String          @default("PER_GM") @db.VarChar(20)
+  rate_type             String          @default("AMOUNT") @db.VarChar(20)
+  rate_value            Decimal         @default(0) @db.Decimal(10, 2)
+  uom                   String          @default("GMS") @db.VarChar(10)
+  rhodium_perc          Decimal         @default(0) @db.Decimal(5, 2)
+  tricolor_rhodium_perc Decimal         @default(0) @db.Decimal(5, 2)
+  lobster_perc          Decimal         @default(0) @db.Decimal(5, 2)
+  silky_rope_perc       Decimal         @default(0) @db.Decimal(5, 2)
+  hallmark_amt          Decimal         @default(0) @db.Decimal(10, 2)
+  remarks               String?         @db.VarChar(500)
+  is_active             Boolean?        @default(true)
+  deactivation_reason   String?         @db.VarChar(500)
+  deactivated_at        DateTime?       @db.Timestamp(6)
+  created_by            Int?
+  updated_by            Int?
+  created_at            DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at            DateTime?       @default(now()) @db.Timestamp(6)
+  customer_master       customer_master @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([customer_id, itemtype, sku_code, karatage], map: "uq_cust_price_metal_cust_item_sku_karat")
+  @@index([is_active], map: "idx_cust_price_metal_active")
+  @@index([customer_id], map: "idx_cust_price_metal_customer")
+  @@index([itemtype], map: "idx_cust_price_metal_itemtype")
+  @@index([sku_code], map: "idx_cust_price_metal_sku")
+}
+
+model customer_price_master_stone {
+  id                  Int             @id @default(autoincrement())
+  customer_id         Int
+  stone_name          String          @db.VarChar(50)
+  stone_code          String          @default("ALL") @db.VarChar(300)
+  rate_basis          String          @default("PER_GM") @db.VarChar(20)
+  rate_type           String          @default("AMOUNT") @db.VarChar(20)
+  rate_value          Decimal         @default(0) @db.Decimal(10, 2)
+  uom                 String          @default("CTS") @db.VarChar(10)
+  remarks             String?         @db.VarChar(500)
+  is_active           Boolean?        @default(true)
+  deactivation_reason String?         @db.VarChar(500)
+  deactivated_at      DateTime?       @db.Timestamp(6)
+  created_by          Int?
+  updated_by          Int?
+  created_at          DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at          DateTime?       @default(now()) @db.Timestamp(6)
+  customer_master     customer_master @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([customer_id, stone_name, stone_code], map: "uq_cust_price_stone_cust_name_code")
+  @@index([is_active], map: "idx_cust_price_stone_active")
+  @@index([customer_id], map: "idx_cust_price_stone_customer")
+  @@index([stone_name], map: "idx_cust_price_stone_name")
+}
+
+model dept_master {
+  id                  Int       @id @default(autoincrement())
+  dept_code           String    @unique @db.VarChar(50)
+  dept_name           String    @db.VarChar(200)
+  sub_dept            String?   @db.VarChar(200)
+  is_active           Boolean   @default(true)
+  created_by          Int?
+  updated_by          Int?
+  created_at          DateTime  @default(now()) @db.Timestamp(6)
+  updated_at          DateTime  @default(now()) @db.Timestamp(6)
+  deactivation_reason String?   @db.VarChar(500)
+  deactivated_at      DateTime? @db.Timestamp(6)
+
+  @@index([is_active], map: "idx_dept_active")
+  @@index([dept_code], map: "idx_dept_code")
+}
+
+model design_images {
+  id            Int           @id @default(autoincrement())
+  design_id     Int
+  image_name    String?       @db.VarChar(200)
+  image_url     String        @db.VarChar(500)
+  is_default    Boolean?      @default(false)
+  sort_order    Int?          @default(0)
+  is_active     Boolean?      @default(true)
+  created_at    DateTime?     @default(now()) @db.Timestamp(6)
+  design_master design_master @relation(fields: [design_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([design_id], map: "idx_design_images_design")
+}
+
+model fg_item_master {
+  id                  Int               @id(map: "item_master_pkey") @default(autoincrement())
+  design_id           Int?
+  design_code         String            @db.VarChar(50)
+  design_no           String?           @db.VarChar(50)
+  collection_name     String?           @db.VarChar(100)
+  product_name        String?           @db.VarChar(100)
+  manufacturing_name  String?           @db.VarChar(200)
+  item_image          String?           @db.VarChar(500)
+  jewellery_type      String?           @db.VarChar(50)
+  sku_type            String?           @db.VarChar(50)
+  gender              String?           @db.VarChar(20)
+  tech_type           String?           @db.VarChar(50)
+  manufacturing_level String?           @db.VarChar(50)
+  occasion            String?           @db.VarChar(100)
+  group_sales         String?           @db.VarChar(100)
+  sub_category        String?           @db.VarChar(100)
+  status              String?           @default("DRAFT") @db.VarChar(20)
+  is_active           Boolean?          @default(true)
+  created_at          DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at          DateTime?         @default(now()) @db.Timestamp(6)
+  created_by          Int?
+  updated_by          Int?
+  uom1                String?           @db.VarChar(50)
+  uom2                String?           @db.VarChar(50)
+  deactivation_reason String?           @db.VarChar(500)
+  deactivated_at      DateTime?         @db.Timestamp(6)
+  video_upload        String?           @db.VarChar(500)
+  video_360           String?           @db.VarChar(500)
+  design_master       design_master?    @relation(fields: [design_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "item_master_design_id_fkey")
+  fg_item_variant     fg_item_variant[]
+}
+
+model fg_item_variant {
+  id                     Int                      @id(map: "item_variant_pkey") @default(autoincrement())
+  item_id                Int
+  sku_code               String                   @unique(map: "item_variant_sku_code_key") @db.VarChar(150)
+  karat_color            String?                  @db.VarChar(50)
+  weight_band            String?                  @db.VarChar(50)
+  size                   String?                  @db.VarChar(50)
+  width_size             String?                  @db.VarChar(50)
+  style_tone             String?                  @db.VarChar(50)
+  vendor_variant_code    String?                  @db.VarChar(100)
+  vendor_variant_name    String?                  @db.VarChar(200)
+  shape                  String?                  @db.VarChar(50)
+  product_description    String?
+  pipe_thickness         String?                  @db.VarChar(50)
+  diamond_cut            String?                  @db.VarChar(50)
+  squeezing              String?                  @db.VarChar(50)
+  setting_size           String?                  @db.VarChar(50)
+  wire_size              String?                  @db.VarChar(50)
+  hammering              String?                  @db.VarChar(50)
+  combination_line       String?                  @db.VarChar(50)
+  compacting             String?                  @db.VarChar(50)
+  machine_used           String?                  @db.VarChar(100)
+  kada_salai_size        String?                  @db.VarChar(50)
+  rfid_chip_number       String?                  @db.VarChar(100)
+  file_link              String?                  @db.VarChar(500)
+  rubber_die_number      String?                  @db.VarChar(100)
+  wax_resin_weight       Decimal?                 @db.Decimal(10, 4)
+  ef_batch_number        String?                  @db.VarChar(100)
+  zinc_surface           String?                  @db.VarChar(100)
+  zinc_die_number        String?                  @db.VarChar(100)
+  zinc_weight            Decimal?                 @db.Decimal(10, 4)
+  seo_words              String?
+  usp                    String?
+  short_description      String?
+  long_description       String?
+  retail_brand           String?                  @db.VarChar(100)
+  keywords_tags          String?
+  product_title          String?                  @db.VarChar(300)
+  video_upload           String?                  @db.VarChar(500)
+  video_360              String?                  @db.VarChar(500)
+  is_active              Boolean?                 @default(true)
+  created_at             DateTime?                @default(now()) @db.Timestamp(6)
+  updated_at             DateTime?                @default(now()) @db.Timestamp(6)
+  vendor_name            String?                  @db.VarChar(255)
+  sku_type               String?                  @db.VarChar(50)
+  group_sales            String?                  @db.VarChar(100)
+  old_erp_variant        String?                  @db.VarChar(100)
+  standard_alloy         String?                  @db.VarChar(100)
+  design_source          String?                  @db.VarChar(100)
+  bom_fg                 bom_fg[]
+  fg_item_master         fg_item_master           @relation(fields: [item_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "item_variant_item_id_fkey")
+  fg_item_variant_client fg_item_variant_client[]
+}
+
+model fg_item_variant_client {
+  id                    Int             @id(map: "item_variant_client_pkey") @default(autoincrement())
+  variant_id            Int
+  customer_name         String?         @db.VarChar(255)
+  customer_variant_code String?         @db.VarChar(100)
+  customer_variant_name String?         @db.VarChar(200)
+  is_active             Boolean?        @default(true)
+  created_at            DateTime?       @default(now()) @db.Timestamp(6)
+  alloy_code            String?         @db.VarChar(50)
+  group_sales           String?         @db.VarChar(100)
+  fg_item_variant       fg_item_variant @relation(fields: [variant_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "item_variant_client_variant_id_fkey")
+
+  @@index([variant_id], map: "idx_fg_ivc_variant")
+}
+
+model fin_item_master {
+  id                  Int                @id @default(autoincrement())
+  design_id           Int?
+  design_code         String             @db.VarChar(50)
+  design_no           String?            @db.VarChar(50)
+  collection_name     String?            @db.VarChar(100)
+  product_name        String?            @db.VarChar(100)
+  manufacturing_name  String?            @db.VarChar(200)
+  item_image          String?            @db.VarChar(500)
+  jewellery_type      String?            @db.VarChar(50)
+  sku_type            String?            @db.VarChar(50)
+  gender              String?            @db.VarChar(20)
+  tech_type           String?            @db.VarChar(50)
+  manufacturing_level String?            @db.VarChar(50)
+  occasion            String?            @db.VarChar(100)
+  group_sales         String?            @db.VarChar(100)
+  sub_category        String?            @db.VarChar(100)
+  status              String?            @default("DRAFT") @db.VarChar(50)
+  uom1                String?            @db.VarChar(20)
+  uom2                String?            @db.VarChar(20)
+  video_upload        String?            @db.VarChar(500)
+  video_360           String?            @db.VarChar(500)
+  is_active           Boolean?           @default(true)
+  deactivation_reason String?            @db.VarChar(500)
+  deactivated_at      DateTime?          @db.Timestamp(6)
+  created_by          Int?
+  updated_by          Int?
+  created_at          DateTime?          @default(now()) @db.Timestamp(6)
+  updated_at          DateTime?          @default(now()) @db.Timestamp(6)
+  design_master       design_master?     @relation(fields: [design_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  fin_item_variant    fin_item_variant[]
+}
+
+model fin_item_variant {
+  id                      Int                       @id @default(autoincrement())
+  item_id                 Int
+  sku_code                String                    @unique @db.VarChar(150)
+  karat_color             String?                   @db.VarChar(50)
+  sku_type                String?                   @db.VarChar(50)
+  group_sales             String?                   @db.VarChar(100)
+  old_erp_variant         String?                   @db.VarChar(100)
+  weight_band             String?                   @db.VarChar(50)
+  size                    String?                   @db.VarChar(50)
+  width_size              String?                   @db.VarChar(50)
+  style_tone              String?                   @db.VarChar(50)
+  design_source           String?                   @db.VarChar(100)
+  standard_alloy          String?                   @db.VarChar(100)
+  vendor_name             String?                   @db.VarChar(200)
+  vendor_variant_code     String?                   @db.VarChar(100)
+  vendor_variant_name     String?                   @db.VarChar(200)
+  shape                   String?                   @db.VarChar(50)
+  product_description     String?
+  pipe_thickness          String?                   @db.VarChar(50)
+  diamond_cut             String?                   @db.VarChar(50)
+  squeezing               String?                   @db.VarChar(50)
+  setting_size            String?                   @db.VarChar(50)
+  wire_size               String?                   @db.VarChar(50)
+  hammering               String?                   @db.VarChar(50)
+  combination_line        String?                   @db.VarChar(50)
+  compacting              String?                   @db.VarChar(50)
+  machine_used            String?                   @db.VarChar(100)
+  kada_salai_size         String?                   @db.VarChar(50)
+  rfid_chip_number        String?                   @db.VarChar(100)
+  file_link               String?                   @db.VarChar(500)
+  rubber_die_number       String?                   @db.VarChar(100)
+  wax_resin_weight        Decimal?                  @db.Decimal(10, 4)
+  ef_batch_number         String?                   @db.VarChar(100)
+  zinc_surface            String?                   @db.VarChar(100)
+  zinc_die_number         String?                   @db.VarChar(100)
+  zinc_weight             Decimal?                  @db.Decimal(10, 4)
+  seo_words               String?
+  usp                     String?
+  short_description       String?
+  long_description        String?
+  retail_brand            String?                   @db.VarChar(100)
+  keywords_tags           String?
+  product_title           String?                   @db.VarChar(300)
+  is_active               Boolean?                  @default(true)
+  created_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  updated_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  gross_weight            Decimal?                  @db.Decimal(12, 4)
+  net_weight              Decimal?                  @db.Decimal(12, 4)
+  bom_fin                 bom_fin[]
+  fin_item_master         fin_item_master           @relation(fields: [item_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  fin_item_variant_client fin_item_variant_client[]
+
+  @@index([item_id], map: "idx_fin_variant_item")
+}
+
+model fin_item_variant_client {
+  id                    Int              @id @default(autoincrement())
+  variant_id            Int
+  customer_name         String?          @db.VarChar(255)
+  customer_variant_code String?          @db.VarChar(100)
+  customer_variant_name String?          @db.VarChar(200)
+  alloy_code            String?          @db.VarChar(50)
+  group_sales           String?          @db.VarChar(100)
+  is_active             Boolean?         @default(true)
+  created_at            DateTime?        @default(now()) @db.Timestamp(6)
+  fin_item_variant      fin_item_variant @relation(fields: [variant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([variant_id], map: "idx_fin_ivc_variant")
+}
+
+model inventory_structure {
+  id                  Int       @id @default(autoincrement())
+  inv_bu_code         String    @db.VarChar(50)
+  inv_org_code        String    @db.VarChar(50)
+  sub_inv_code        String    @db.VarChar(100)
+  sub_inv_name        String    @db.VarChar(200)
+  store_type          String?   @db.VarChar(50)
+  is_tracks_gold      Boolean?  @default(false)
+  is_tracks_wt        Boolean?  @default(false)
+  is_active           Boolean?  @default(true)
+  deactivation_reason String?   @db.VarChar(500)
+  deactivated_at      DateTime? @db.Timestamp(6)
+  created_by          Int?
+  updated_by          Int?
+  created_at          DateTime? @default(now()) @db.Timestamp(6)
+  updated_at          DateTime? @default(now()) @db.Timestamp(6)
+
+  @@unique([inv_bu_code, inv_org_code, sub_inv_code], map: "uq_inv_struct_bu_org_subinv")
+  @@index([is_active], map: "idx_inv_struct_active")
+  @@index([inv_bu_code], map: "idx_inv_struct_bu")
+  @@index([inv_org_code], map: "idx_inv_struct_org")
+}
+
+model machine_master {
+  id                  Int       @id @default(autoincrement())
+  machine_code        String    @unique @db.VarChar(50)
+  machine_name        String    @db.VarChar(200)
+  machine_type        String    @db.VarChar(100)
+  dept_id             Int
+  make_brand          String    @db.VarChar(100)
+  capacity_speed      String    @db.VarChar(100)
+  machine_remarks     String?   @db.VarChar(500)
+  deactivation_reason String?   @db.VarChar(500)
+  deactivated_at      DateTime? @db.Timestamp(6)
+  is_active           Boolean   @default(true)
+  created_by          Int?
+  updated_by          Int?
+  created_at          DateTime  @default(now()) @db.Timestamp(6)
+  updated_at          DateTime  @default(now()) @db.Timestamp(6)
+
+  @@index([is_active], map: "idx_machine_active")
+  @@index([machine_code], map: "idx_machine_code")
+  @@index([dept_id], map: "idx_machine_dept")
+  @@index([machine_type], map: "idx_machine_type")
+}
+
+model min_max_planning_master {
+  id                  Int       @id @default(autoincrement())
+  itemtype            String    @db.VarChar(50)
+  sku_code            String    @db.VarChar(300)
+  min_quantity        Decimal?  @default(0) @db.Decimal(12, 4)
+  max_quantity        Decimal?  @default(0) @db.Decimal(12, 4)
+  moq_quantity        Decimal?  @default(0) @db.Decimal(12, 4)
+  min_weight          Decimal?  @default(0) @db.Decimal(12, 4)
+  max_weight          Decimal?  @default(0) @db.Decimal(12, 4)
+  moq_weight          Decimal?  @default(0) @db.Decimal(12, 4)
+  order_base          String    @default("QUANTITY") @db.VarChar(20)
+  remarks             String?   @db.VarChar(500)
+  is_active           Boolean?  @default(true)
+  deactivation_reason String?   @db.VarChar(500)
+  deactivated_at      DateTime? @db.Timestamp(6)
+  created_by          Int?
+  updated_by          Int?
+  created_at          DateTime? @default(now()) @db.Timestamp(6)
+  updated_at          DateTime? @default(now()) @db.Timestamp(6)
+
+  @@unique([itemtype, sku_code], map: "uq_min_max_itemtype_sku")
+  @@index([is_active], map: "idx_min_max_active")
+  @@index([itemtype], map: "idx_min_max_itemtype")
+  @@index([sku_code], map: "idx_min_max_sku")
+}
+
+model operation_master {
+  id                  Int       @id @default(autoincrement())
+  operation_code      String    @unique @db.VarChar(50)
+  operation_name      String    @db.VarChar(200)
+  dept_id             Int
+  std_time            Decimal   @db.Decimal(8, 2)
+  yield_percentage    Decimal?  @db.Decimal(5, 2)
+  process_by          String?   @db.VarChar(100)
+  deactivation_reason String?   @db.VarChar(500)
+  deactivated_at      DateTime? @db.Timestamp(6)
+  is_active           Boolean   @default(true)
+  created_by          Int?
+  updated_by          Int?
+  created_at          DateTime  @default(now()) @db.Timestamp(6)
+  updated_at          DateTime  @default(now()) @db.Timestamp(6)
+  machine_ids         Int[]     @default([])
+
+  @@index([is_active], map: "idx_op_active")
+  @@index([operation_code], map: "idx_op_code")
+  @@index([dept_id], map: "idx_op_dept")
+  @@index([machine_ids], map: "idx_op_machine_ids", type: Gin)
+}
+
+model supplier_rate_contract {
+  id                  Int             @id @default(autoincrement())
+  vendor_id           Int
+  itemtype            String          @db.VarChar(50)
+  sku_code            String          @db.VarChar(300)
+  rate_basis          String          @default("PER_GM") @db.VarChar(20)
+  rate_type           String          @default("AMOUNT") @db.VarChar(20)
+  rate_value          Decimal         @default(0) @db.Decimal(10, 2)
+  uom                 String          @default("GMS") @db.VarChar(10)
+  remarks             String?         @db.VarChar(500)
+  is_active           Boolean?        @default(true)
+  deactivation_reason String?         @db.VarChar(500)
+  deactivated_at      DateTime?       @db.Timestamp(6)
+  created_by          Int?
+  updated_by          Int?
+  created_at          DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at          DateTime?       @default(now()) @db.Timestamp(6)
+  supplier_master     supplier_master @relation(fields: [vendor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([vendor_id, itemtype, sku_code], map: "uq_supp_rate_vendor_item_sku")
+  @@index([is_active], map: "idx_supp_rate_active")
+  @@index([itemtype], map: "idx_supp_rate_itemtype")
+  @@index([sku_code], map: "idx_supp_rate_sku")
+  @@index([vendor_id], map: "idx_supp_rate_vendor")
+}
+
+model user_menu_mapping {
+  id          Int         @id @default(autoincrement())
+  user_id     Int
+  menu_id     Int
+  can_view    Boolean?
+  can_create  Boolean?
+  can_update  Boolean?
+  can_delete  Boolean?
+  can_print   Boolean?
+  can_export  Boolean?
+  is_active   Boolean?    @default(true)
+  created_by  Int?
+  updated_by  Int?
+  created_at  DateTime?   @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime?   @default(now()) @db.Timestamptz(6)
+  menu_master menu_master @relation(fields: [menu_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user_master user_master @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, menu_id])
+  @@index([user_id], map: "idx_user_menu_mapping_user")
+}
+
+

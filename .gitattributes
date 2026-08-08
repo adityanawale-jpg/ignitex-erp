@@ -1,0 +1,21 @@
+# Normalise line endings so Windows and Linux checkouts stay consistent
+* text=auto eol=lf
+
+# Shell scripts must keep LF or they break in Docker
+*.sh text eol=lf
+Dockerfile text eol=lf
+*.conf text eol=lf
+
+# Windows-only files keep CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary files — never touch
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text
+*.xlsx binary
+*.pdf binary

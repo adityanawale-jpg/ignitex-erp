@@ -1,0 +1,33 @@
+// Module-name labels passed to logAudit() across controllers. Centralized
+// so every call site references the same literal instead of a hand-typed
+// string that can silently drift (e.g. "Supplier Master" vs "Supplier master").
+export const AUDIT_MODULE = {
+  ALLOY_MASTER: 'Alloy Master',
+  COMPONENT_MASTER: 'Component Master',
+  CUSTOMER_MASTER: 'Customer Master',
+  CUSTOMER_PRICE_METAL: 'Customer Price Master (Metal)',
+  CUSTOMER_PRICE_STONE: 'Customer Price Master (Stone)',
+  DAILY_RATE: 'Daily Rate',
+  DEPARTMENT_MASTER: 'Department Master',
+  FG_BOM: 'FG BOM',
+  FG_MASTER_IMPORT: 'FG Master Import',
+  FINDING_BOM: 'Finding BOM',
+  FINDING_MASTER_IMPORT: 'Finding Master Import',
+  INVENTORY_STRUCTURE: 'Inventory Structure',
+  LOOKUP_MASTER: 'Lookup Master',
+  MACHINE_MASTER: 'Machine Master',
+  METAL_MASTER: 'Metal Master',
+  METAL_RECEIPT: 'Metal Receipt',
+  MIN_MAX_PLANNING: 'Min Max Planning',
+  OPERATION_MASTER: 'Operation Master',
+  PURCHASE_ORDER: 'Purchase Order',
+  PURCHASE_REQUISITION: 'Purchase Requisition',
+  SALES_ORDER: 'Sales Order',
+  STONE_ITEMS: 'Stone Items',
+  SUPPLIER_MASTER: 'Supplier Master',
+  SUPPLIER_RATE_CONTRACT: 'Supplier Rate Contract',
+  SYSTEM_CONFIG: 'System Config',
+  USER_MENU_PERMISSION: 'User-Menu-Permission',
+  USER_ROLE: 'User-Role',
+  USERS: 'Users',
+} as const;

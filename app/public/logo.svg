@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 110" width="200" height="110">
+  <!-- white bg -->
+  <rect width="200" height="110" fill="white"/>
+
+  <!-- faint oval behind R -->
+  <ellipse cx="100" cy="50" rx="32" ry="34" fill="none" stroke="#C9A84C" stroke-width="0.8" opacity="0.4"/>
+
+  <!-- stylised R in maroon -->
+  <text
+    x="100" y="68"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="56"
+    font-weight="bold"
+    fill="#7B2215"
+    text-anchor="middle"
+    dominant-baseline="auto"
+  >R</text>
+
+  <!-- gold hairline under R -->
+  <line x1="68" y1="77" x2="132" y2="77" stroke="#C9A84C" stroke-width="0.7" opacity="0.7"/>
+
+  <!-- company name — single line -->
+  <text
+    x="100" y="96"
+    font-family="Montserrat, 'Helvetica Neue', sans-serif"
+    font-size="8"
+    font-weight="600"
+    fill="#5A4A3A"
+    text-anchor="middle"
+    letter-spacing="2.5"
+  >ROYAL CHAINS PVT. LTD.</text>
+</svg>

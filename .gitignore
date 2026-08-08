@@ -1,0 +1,58 @@
+# ── Dependencies ──────────────────────────────────────────────
+node_modules/
+
+# ── Build outputs ─────────────────────────────────────────────
+dist/
+api/dist/
+app/dist/
+api/src/generated/
+# Compiled frontend bundle — rebuilt on deploy, never committed
+frontend/
+*.js.map
+*.css.map
+
+# ── Environment files (NEVER commit these) ────────────────────
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# ── Logs & uploads ────────────────────────────────────────────
+api/logs/
+api/uploads/
+*.log
+vite_err.txt
+vite_out.txt
+
+# ── Archived copies ───────────────────────────────────────────
+old_bkp/
+
+# ── OS / editor noise ─────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# ── Misc ──────────────────────────────────────────────────────
+*.zip
+*.tmp
+# Office lock files
+~$*
+
+# Empty stray files left by a redirected docker build command
+/=
+/CACHED
+/ERROR
+/exporting
+/naming
+/reading
+/transferring
+/writing
+/[[]api
+/[[]app
+/[[]app]
+/[[]internal]
+
+# ── Claude Code ───────────────────────────────────────────────
+.claude/

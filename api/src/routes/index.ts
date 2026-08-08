@@ -1,0 +1,66 @@
+import { Router } from 'express';
+
+import authRoutes from './auth.routes';
+import commonRoutes from './common.routes';
+import mailRoutes from './mail.routes';
+import settingsRoutes from './settings.routes';
+import logRoutes from './log.routes';
+import userRoutes from './user.routes';
+import lookupMasterRoutes from './lookupMaster.routes';
+import mastersRoutes from './masters.routes';
+import stoneItemRoutes from './stoneItem.routes';
+import minMaxPlanningRoutes from './minMaxPlanning.routes';
+import supplierRateContractRoutes from './supplierRateContract.routes';
+import inventoryStructureRoutes from './inventoryStructure.routes';
+import customerPriceMasterRoutes from './customerPriceMaster.routes';
+import dailyRateRoutes from './dailyRate.routes';
+import componentMasterRoutes from './componentMaster.routes';
+import metalMasterRoutes from './metalMaster.routes';
+import supplierMasterRoutes from './supplierMaster.routes';
+import customerMasterRoutes from './customerMaster.routes';
+import salesOrderRoutes from './salesOrder.routes';
+import purchaseRequisitionRoutes from './purchaseRequisition.routes';
+import purchaseOrderRoutes from './purchaseOrder.routes';
+import metalReceiptRoutes from './metalReceipt.routes';
+import stockRoutes from './stock.routes';
+import workflowRoutes from './workflow.routes';
+import productionMastersRoutes from './productionMasters.routes';
+import fgBomRoutes from './fgBom.routes';
+import fgImportRoutes from './fgImport.routes';
+import finBomRoutes from './finBom.routes';
+import findingImportRoutes from './findingImport.routes';
+
+const router = Router();
+
+router.use('/auth', authRoutes);
+router.use('/common', commonRoutes);
+router.use('/mail', mailRoutes);
+router.use('/settings', settingsRoutes);
+router.use('/logs', logRoutes);
+router.use('/users', userRoutes);
+router.use('/lookup-master', lookupMasterRoutes);
+router.use('/masters', mastersRoutes);
+router.use('/stone-items', stoneItemRoutes);
+router.use('/min-max-planning', minMaxPlanningRoutes);
+router.use('/supplier-rate-contract', supplierRateContractRoutes);
+router.use('/inventory-structure', inventoryStructureRoutes);
+router.use('/customer-price', customerPriceMasterRoutes);
+router.use('/daily-rate', dailyRateRoutes);
+router.use('/component-master', componentMasterRoutes);
+router.use('/metal-master', metalMasterRoutes);
+router.use('/suppliers', supplierMasterRoutes);
+router.use('/customers', customerMasterRoutes);
+router.use('/sales-orders', salesOrderRoutes);
+router.use('/purchase-requisitions', purchaseRequisitionRoutes);
+router.use('/purchase-orders', purchaseOrderRoutes);
+router.use('/metal-receipts', metalReceiptRoutes);
+router.use('/stock', stockRoutes);
+router.use('/workflow', workflowRoutes);
+router.use('/fg-bom', fgBomRoutes);
+router.use('/finished-goods', fgImportRoutes);
+router.use('/fin-bom', finBomRoutes);
+router.use('/findings', findingImportRoutes);
+// Bundles departments/machines/operations/alloys — no shared prefix, mounted at root
+router.use(productionMastersRoutes);
+
+export default router;
