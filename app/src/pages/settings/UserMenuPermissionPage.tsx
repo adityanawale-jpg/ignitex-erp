@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { apiService } from '@/api/apiService'
 import PageHeader from '@/components/common/PageHeader'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 import { getInitials } from '@/utils/helpers'
 import { usePermission } from '@/hooks'
 
@@ -272,11 +273,7 @@ const UserMenuPermissionPage: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center gap-2 text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-        <span>System Admin</span>
-        <span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>User-wise Permission Override</span>
-      </div>
+      <PageBreadcrumb parent="System Admin" current="User-wise Permission Override" />
 
       <PageHeader
         breadcrumbItems={[]}

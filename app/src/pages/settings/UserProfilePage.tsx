@@ -9,6 +9,7 @@ import { useAppSelector, useAppDispatch } from '@/hooks'
 import { updateUser as updateUserSlice, fetchProfileAsync } from '@/redux/slices/authSlice'
 import { apiService, getFileUrl } from '@/api/apiService'
 import toast from 'react-hot-toast'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 
 // ── helpers ────────────────────────────────────────────────────
 
@@ -301,11 +302,7 @@ const UserProfilePage: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs mb-5" style={{ color: 'var(--text-muted)' }}>
-        <span>System Admin</span><span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>User Profile</span>
-      </div>
+      <PageBreadcrumb parent="System Admin" current="User Profile" className="mb-5" />
 
       {/* ── Hero Banner ── */}
       <div className="card overflow-hidden mb-6">

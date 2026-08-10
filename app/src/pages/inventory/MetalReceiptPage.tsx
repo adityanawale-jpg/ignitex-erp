@@ -9,6 +9,7 @@ import {
 import Modal                  from '@/components/common/Modal'
 import Badge                  from '@/components/common/Badge'
 import DeactivateReasonDialog from '@/components/common/DeactivateReasonDialog'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 import WorkflowPanel          from '@/components/workflow/WorkflowPanel'
 import { formatDate, formatDateTime, exportToCSV, exportToExcel, exportToPDF } from '@/utils/helpers'
 import { apiService } from '@/api/apiService'
@@ -806,12 +807,7 @@ const MetalReceiptPage: React.FC = () => {
   // ── Render ────────────────────────────────────────────────────
   return (
     <div>
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-        <span>Inventory Management</span>
-        <span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>Metal Receipt</span>
-      </div>
+      <PageBreadcrumb parent="Inventory Management" current="Metal Receipt" />
 
       {/* Work list + Add */}
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">

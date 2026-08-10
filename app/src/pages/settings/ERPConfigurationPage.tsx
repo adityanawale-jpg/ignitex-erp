@@ -7,6 +7,7 @@ import { useAppSelector, useAppDispatch } from '@/hooks'
 import { setAppConfig, applyFavicon } from '@/redux/slices/appConfigSlice'
 import { apiService, getFileUrl } from '@/api/apiService'
 import toast from 'react-hot-toast'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 
 // ── helpers ────────────────────────────────────────────────────────────────────
 const toBase64 = (file: File): Promise<string> =>
@@ -243,11 +244,7 @@ const ERPConfigurationPage: React.FC = () => {
 
   return (
     <div>
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs mb-5" style={{ color: 'var(--text-muted)' }}>
-        <span>System Admin</span><span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>ERP Configuration</span>
-      </div>
+      <PageBreadcrumb parent="System Admin" current="ERP Configuration" className="mb-5" />
 
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">

@@ -13,8 +13,9 @@ import Modal                  from '@/components/common/Modal'
 import Badge                  from '@/components/common/Badge'
 import ConfirmDialog          from '@/components/common/ConfirmDialog'
 import DeactivateReasonDialog from '@/components/common/DeactivateReasonDialog'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 import WorkflowPanel          from '@/components/workflow/WorkflowPanel'
-import { formatDate, formatDateTime } from '@/utils/helpers'
+import { formatDate, formatDateTime, escapeHtml, escapeHtmlWithBreaks as esc } from '@/utils/helpers'
 import { apiService } from '@/api/apiService'
 import { usePermission } from '@/hooks'
 
@@ -595,9 +596,6 @@ interface PrintData {
     requested_date: string
   }[]
 }
-
-const esc = (s: string) =>
-  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br/>')
 
 // Self-contained HTML document — used for preview, browser print and Word export
 function buildOrderHTML(d: PrintData): string {
@@ -1573,7 +1571,7 @@ const SalesOrderPage: React.FC = () => {
     if (!printData) return
     const w = window.open('', '_blank', 'width=900,height=700')
     if (!w) { toast.error('Popup blocked — allow popups to print'); return }
-    w.document.write(`<!doctype html><html><head><title>${printData.order_no} — Sales Order</title></head><body style="margin:24px;">${buildOrderHTML(printData)}</body></html>`)
+    w.document.write(`<!doctype html><html><head><title>${escapeHtml(printData.order_no)} — Sales Order</title></head><body style="margin:24px;">${buildOrderHTML(printData)}</body></html>`)
     w.document.close()
     w.focus()
     setTimeout(() => { w.print() }, 300)
@@ -1630,7 +1628,7 @@ const SalesOrderPage: React.FC = () => {
 
   const doExportWord = () => {
     if (!printData) return
-    const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>${printData.order_no}</title></head><body>${buildOrderHTML(printData)}</body></html>`
+    const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>${escapeHtml(printData.order_no)}</title></head><body>${buildOrderHTML(printData)}</body></html>`
     downloadBlob(html, `${printData.order_no.replace(/[^\w-]/g, '_')}_sales_order.doc`, 'application/msword')
     setPrintExpOpen(false)
   }
@@ -2520,12 +2518,7 @@ const SalesOrderPage: React.FC = () => {
   // ─────────────────────────────────────────────────────────────────
   return (
     <div>
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-        <span>Order Management</span>
-        <span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>Sales Order</span>
-      </div>
+      <PageBreadcrumb parent="Order Management" current="Sales Order" />
 
       {/* Stats + Add button */}
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">

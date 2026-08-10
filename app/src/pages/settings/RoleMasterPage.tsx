@@ -12,6 +12,7 @@ import Badge from '@/components/common/Badge'
 import ConfirmDialog from '@/components/common/ConfirmDialog'
 import DeactivateReasonDialog from '@/components/common/DeactivateReasonDialog'
 import PageHeader from '@/components/common/PageHeader'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 import { usePermission } from '@/hooks'
 
 interface Role {
@@ -141,12 +142,7 @@ const RoleMasterPage: React.FC = () => {
 
   return (
     <div>
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-        <span>System Admin</span>
-        <span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>Role &amp; Responsibility</span>
-      </div>
+      <PageBreadcrumb parent="System Admin" current="Role & Responsibility" />
 
       <PageHeader
         title="Role Master"

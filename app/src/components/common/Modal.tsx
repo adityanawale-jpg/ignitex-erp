@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useId, useRef } from 'react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
+import { useFocusTrap } from '@/hooks'
 
 interface ModalProps {
   isOpen: boolean
@@ -28,6 +29,9 @@ const Modal: React.FC<ModalProps> = ({
   size = 'lg',
   footer,
 }) => {
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const titleId = useId()
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
     if (isOpen) document.addEventListener('keydown', handler)
@@ -38,6 +42,8 @@ const Modal: React.FC<ModalProps> = ({
     document.body.style.overflow = isOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [isOpen])
+
+  useFocusTrap(isOpen, dialogRef)
 
   if (!isOpen) return null
 
@@ -54,6 +60,10 @@ const Modal: React.FC<ModalProps> = ({
       />
       {/* Modal */}
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
         className={`relative w-full ${sizeMap[size]} rounded-xl shadow-2xl border border-[var(--border-color)] animate-fade-in flex flex-col max-h-[90vh] mx-auto`}
         style={{ background: 'var(--bg-modal)' }}
       >
@@ -62,13 +72,15 @@ const Modal: React.FC<ModalProps> = ({
           className="flex items-center justify-between px-6 py-4 flex-shrink-0 rounded-t-xl"
           style={{ background: 'var(--bg-modal-header)', borderBottom: '1px solid var(--border-color)' }}
         >
-          <h2 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{title}</h2>
+          <h2 id={titleId} className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{title}</h2>
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Close dialog"
             className="p-1.5 rounded-lg transition-colors"
             style={{ color: 'var(--text-secondary)' }}
           >
-            <XMarkIcon className="w-5 h-5" />
+            <XMarkIcon className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
         {/* Body */}

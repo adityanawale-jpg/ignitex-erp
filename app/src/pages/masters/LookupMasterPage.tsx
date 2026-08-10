@@ -16,6 +16,7 @@ import Modal                  from '@/components/common/Modal'
 import Badge                  from '@/components/common/Badge'
 import ConfirmDialog          from '@/components/common/ConfirmDialog'
 import DeactivateReasonDialog from '@/components/common/DeactivateReasonDialog'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 import { formatDate, formatDateTime, exportToCSV, exportToExcel, exportToPDF } from '@/utils/helpers'
 import { apiService } from '@/api/apiService'
 
@@ -581,11 +582,7 @@ const LookupMasterPage: React.FC = () => {
   // ── Render ───────────────────────────────────────────────────
   return (
     <div>
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-        <span>Masters</span><span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>Lookup Master</span>
-      </div>
+      <PageBreadcrumb parent="Masters" current="Lookup Master" />
 
       {/* ── Top bar ─────────────────────────────────────────── */}
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">

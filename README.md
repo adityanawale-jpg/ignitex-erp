@@ -51,17 +51,37 @@ ERP/
 
 ### 1. Database Setup
 
-**Prisma migrations are the authoritative schema history.** To set up a fresh database:
+> ⚠️ **`npx prisma migrate deploy` alone does not work on a blank database.** It fails
+> part-way through, and even when the schema is complete the tables are empty — no
+> login, no menus, no dynamic queries. The order below is the one that actually works.
+> Full explanation in **[LOCAL_SETUP.md](LOCAL_SETUP.md)**.
 
 ```bash
 psql -U postgres -c "CREATE DATABASE ignitex_erp;"
 cd api
+
+# a) Schema only — the baseline migration builds all 48 tables from nothing
+psql -U postgres -d ignitex_erp -f prisma/migrations/20260716000001_baseline_reconciled_schema/migration.sql
+
+# b) Record it as applied so Prisma does not try to run it again
+npx prisma migrate resolve --applied 20260716000001_baseline_reconciled_schema
+
+# c) System seed data — users, roles, menus, permissions, lookups, project_config
+psql -U postgres -d ignitex_erp -f ../database/local_seed.sql
+
+# d) The remaining migrations, which depend on the seed rows existing
 npx prisma migrate deploy
+npx prisma generate
 ```
 
-This applies `api/prisma/migrations/20260716000001_baseline_reconciled_schema/` — a single, verified migration that builds the complete current schema (all tables, indexes, and constraints) from nothing. Verified 2026-07-16 by running it against a blank database and diff-comparing the result column-by-column, index-by-index against the live dev database.
+**Why the seed step sits in the middle:** several later migrations insert menu rows
+that reference a parent menu no migration ever creates, so they abort with a foreign
+key error unless the base data is already loaded.
 
-See **"Database Migrations"** below for why this exists and what happened to the old numbered SQL scripts.
+`database/local_seed.sql` carries 66 menus, 381 role permissions, 330 lookups and 207
+`project_config` rows — the dynamic SQL almost every screen depends on.
+
+See **"Database Migrations"** below for the history of the numbered SQL scripts.
 
 ---
 
@@ -74,17 +94,18 @@ cd api
 npm install
 
 # Configure environment
-cp .env.example .env
-# Edit .env with your DB credentials
-
-# Build TypeScript
-npm run build
+cp .env.example .env.local
+# Edit .env.local with your DB credentials
 
 # Start development server
 npm run dev
 ```
 
 Backend runs at: `http://localhost:5000`
+
+> The API and the Prisma CLI both read **`.env.local`** — keep the connection string
+> in that one file only. `npm run build` is only needed for a production build;
+> `npm run dev` runs the TypeScript directly.
 
 ---
 
@@ -96,23 +117,70 @@ cd app
 # Install dependencies
 npm install
 
+# Configure environment (defaults work for local development)
+cp .env.example .env
+
 # Start development server
 npm run dev
 ```
 
 Frontend runs at: `http://localhost:5173`
 
+The dev server proxies `/api` and `/uploads` to `http://localhost:5000`, so the
+backend must be running first. See **"Frontend Guide"** below for how the app is
+put together.
+
+---
+
+## 🖥️ Frontend Guide
+
+**Where things live** (`app/src/`):
+
+| Folder | Contents |
+|--------|----------|
+| `api/` | The single axios instance every page uses, plus the global loading counter |
+| `components/common/` | Shared UI — `Modal`, `ConfirmDialog`, `DataTable`, `PageBreadcrumb`, `Badge` |
+| `components/layout/` | `Sidebar`, `Navbar`, `TabBar` |
+| `layouts/AdminLayout.tsx` | The shell wrapping every signed-in page |
+| `pages/` | One folder per module — masters, orders, purchase, inventory, settings |
+| `redux/slices/` | Shared state — auth, menu, tabs, theme, notifications |
+| `routes/` | `AppRoutes.tsx` (URL → page) and `routeRegistry.ts` (tab → page) |
+| `hooks/` | Typed Redux hooks plus `usePermission` and `useFocusTrap` |
+| `utils/` | Formatting, export and HTML-escaping helpers |
+
+**Three things that are easy to miss:**
+
+1. **The sidebar is built from the database, not the code.** `/auth/profile` returns the
+   menus the signed-in user's role allows, and `Sidebar` renders that tree. Adding a
+   screen means adding a `menu_master` row, not editing a menu constant.
+
+2. **Most screens do not have their own endpoint.** They call `/common/get` with a
+   *method name* such as `fg_item_list_get`; the backend looks that name up in the
+   `project_config` table and runs the SQL stored there. Newer modules (Sales Order,
+   Purchase Order, Metal Receipt, BOM, Stock) do have dedicated endpoints.
+
+3. **Routing is declared twice.** A new page must be registered in **both**
+   `AppRoutes.tsx` and `routeRegistry.ts` — the first drives the URL, the second drives
+   the keep-alive tab system. Missing either one gives a blank tab or a redirect home.
+
+**Conventions:** `app` uses no semicolons, `api` uses them — `.prettierrc` encodes both.
+Import with the `@/` alias rather than long relative paths. Prefer the shared components
+in `components/common/` over rebuilding a table or dialog.
+
 ---
 
 ## 🔑 Default Credentials
 
-| Username | Password  | Role    |
-|----------|-----------|---------|
-| admin    | Admin@123 | Admin   |
-| manager  | Admin@123 | Manager |
-| sales01  | Admin@123 | Sales   |
+Sign in with the **employee ID**, not the email address.
 
-> **Note:** Passwords in the seed data are demo hashes. Run the password hash script to generate proper bcrypt hashes for production.
+| Employee ID | Password  | Role                 |
+|-------------|-----------|----------------------|
+| EMP001      | Admin@123 | System Administrator |
+| EMP002      | Admin@123 | Manager              |
+| EMP003      | Admin@123 | Operator             |
+
+> **Note:** These are demo accounts from the seed data. Change every password before
+> any deployment.
 
 ---
 

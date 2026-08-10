@@ -17,6 +17,7 @@ import {
 import Badge                  from '@/components/common/Badge'
 import ConfirmDialog          from '@/components/common/ConfirmDialog'
 import DeactivateReasonDialog from '@/components/common/DeactivateReasonDialog'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 import FGImportWizard         from '@/components/masters/FGImportWizard'
 import { formatDate, formatDateTime, exportToCSV, exportToExcel, exportToPDF } from '@/utils/helpers'
 import { apiService, dynamicApi, getFileUrl } from '@/api/apiService'
@@ -1858,11 +1859,7 @@ const FinishedGoodsItemPage: React.FC = () => {
   // ══════════════════════════════════════════════════════════════
   const renderList = () => (
     <div>
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-        <span>Master Management</span><span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>FG Master</span>
-      </div>
+      <PageBreadcrumb parent="Master Management" current="FG Master" />
 
       {/* Top bar */}
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">

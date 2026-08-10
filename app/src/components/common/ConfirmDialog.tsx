@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useEffect, useId, useRef } from 'react'
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+import { useFocusTrap } from '@/hooks'
 
 interface ConfirmDialogProps {
   isOpen: boolean
@@ -22,6 +23,19 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   onCancel,
   variant = 'danger',
 }) => {
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const titleId = useId()
+  const messageId = useId()
+
+  useFocusTrap(isOpen, dialogRef)
+
+  useEffect(() => {
+    if (!isOpen) return
+    const handler = (e: KeyboardEvent) => e.key === 'Escape' && onCancel()
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [isOpen, onCancel])
+
   if (!isOpen) return null
 
   const colorMap = {
@@ -39,20 +53,29 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   return (
     <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onCancel} />
-      <div className="relative w-full max-w-sm bg-[var(--bg-secondary)] rounded-xl shadow-2xl border border-[var(--border)] p-6 animate-fade-in">
+      <div
+        ref={dialogRef}
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={messageId}
+        className="relative w-full max-w-sm bg-[var(--bg-secondary)] rounded-xl shadow-2xl border border-[var(--border)] p-6 animate-fade-in"
+      >
         <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 mx-auto ${colorMap[variant]}`}>
-          <ExclamationTriangleIcon className="w-6 h-6" />
+          <ExclamationTriangleIcon className="w-6 h-6" aria-hidden="true" />
         </div>
-        <h3 className="text-center font-semibold text-[var(--text-primary)] mb-2">{title}</h3>
-        <p className="text-center text-sm text-[var(--text-secondary)] mb-6">{message}</p>
+        <h3 id={titleId} className="text-center font-semibold text-[var(--text-primary)] mb-2">{title}</h3>
+        <p id={messageId} className="text-center text-sm text-[var(--text-secondary)] mb-6">{message}</p>
         <div className="flex gap-3">
           <button
+            type="button"
             onClick={onCancel}
             className="flex-1 btn-secondary"
           >
             {cancelLabel}
           </button>
           <button
+            type="button"
             onClick={onConfirm}
             className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${btnMap[variant]}`}
           >

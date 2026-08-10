@@ -8,6 +8,7 @@ import {
   BarsArrowUpIcon, SparklesIcon, EyeIcon, PaperAirplaneIcon,
 } from '@heroicons/react/24/outline'
 import Badge          from '@/components/common/Badge'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 import WorkflowPanel, { ACTION_META } from '@/components/workflow/WorkflowPanel'
 import { formatDateTime, exportToCSV, exportToExcel, exportToPDF } from '@/utils/helpers'
 import { getLovMany } from '@/utils/lovCache'
@@ -1289,11 +1290,7 @@ export default function FGBOMPage() {
   return (
     <div className="p-4 sm:p-6">
 
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-        <span>Master Management</span><span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>Bill of Materials (FG BOM)</span>
-      </div>
+      <PageBreadcrumb parent="Master Management" current="Bill of Materials (FG BOM)" />
 
       {/* Status tab row + title */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">

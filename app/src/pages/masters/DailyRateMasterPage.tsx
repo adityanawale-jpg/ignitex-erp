@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { CalendarDaysIcon, BoltIcon } from '@heroicons/react/24/outline'
 import DailyRateSheetTab  from './dailyRate/DailyRateSheetTab'
 import DailyRateConfigTab from './dailyRate/DailyRateConfigTab'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 
 type TabId = 'SHEETS' | 'AUTO'
 
@@ -20,12 +21,7 @@ const DailyRateMasterPage: React.FC = () => {
 
   return (
     <div>
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-        <span>Masters</span>
-        <span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>Daily Rate</span>
-      </div>
+      <PageBreadcrumb parent="Masters" current="Daily Rate" />
 
       {/* Tab bar */}
       <div className="flex border-b mb-5" style={{ borderColor: 'var(--border-color)' }}>

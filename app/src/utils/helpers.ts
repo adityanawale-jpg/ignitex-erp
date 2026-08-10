@@ -167,6 +167,22 @@ export const timeAgo = (dateStr: string): string => {
 }
 
 /**
+ * Escape HTML special characters before interpolating a value into a markup string.
+ * Use for any user or database supplied text in the print / Word export builders.
+ */
+export const escapeHtml = (value: string | undefined | null): string => {
+  if (!value) return ''
+  return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+/**
+ * Same as escapeHtml, but keeps multi-line text readable by turning
+ * newlines into line breaks. Use inside block elements, not attributes.
+ */
+export const escapeHtmlWithBreaks = (value: string | undefined | null): string =>
+  escapeHtml(value).replace(/\n/g, '<br/>')
+
+/**
  * Export data to CSV
  */
 export const exportToCSV = (data: Record<string, unknown>[], filename: string): void => {

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import Badge from '@/components/common/Badge'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 import { apiService } from '@/api/apiService'
 import { formatDateTime } from '@/utils/helpers'
 
@@ -78,12 +79,7 @@ const OnHandStockPage: React.FC = () => {
 
   return (
     <div>
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-        <span>Inventory Management</span>
-        <span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>On Hand Stock</span>
-      </div>
+      <PageBreadcrumb parent="Inventory Management" current="On Hand Stock" />
 
       {/* Summary tiles */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">

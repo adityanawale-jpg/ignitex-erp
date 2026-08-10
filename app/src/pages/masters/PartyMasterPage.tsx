@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { Plus, Search, Edit2, Trash2, X, Loader2, Users, RefreshCw, Filter } from 'lucide-react';
 import { dynamicApi } from '@/api/apiService';
 import toast from 'react-hot-toast';
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 
 interface Party {
   id: number;
@@ -138,12 +139,7 @@ const PartyMasterPage: React.FC = () => {
 
   return (
     <div className="animate-fade-in">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-        <span>Masters</span>
-        <span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>Party Master</span>
-      </div>
+      <PageBreadcrumb parent="Masters" current="Party Master" />
 
       {/* Page header */}
       <div className="page-header">

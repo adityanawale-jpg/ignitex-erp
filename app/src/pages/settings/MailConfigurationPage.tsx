@@ -16,6 +16,7 @@ import {
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline'
 import { dynamicApi, apiService } from '@/api/apiService'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 
 // ── Types ─────────────────────────────────────────────────────
 interface MailFormValues {
@@ -259,11 +260,7 @@ const MailConfigurationPage: React.FC = () => {
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-5">
 
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-muted)' }}>
-        <span>System Admin</span><span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>Mail Configuration</span>
-      </div>
+      <PageBreadcrumb parent="System Admin" current="Mail Configuration" className="" />
 
       {/* ── Header ── */}
       <div className="flex items-center justify-between gap-4 flex-wrap">

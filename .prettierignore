@@ -1,0 +1,10 @@
+node_modules
+dist
+frontend
+old_bkp
+api/src/generated
+api/prisma/migrations
+database/scripts
+package-lock.json
+*.min.js
+*.log

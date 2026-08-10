@@ -9,6 +9,7 @@ import DataTable from '@/components/common/DataTable'
 import Modal from '@/components/common/Modal'
 import Badge from '@/components/common/Badge'
 import ConfirmDialog from '@/components/common/ConfirmDialog'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 import { usePermission } from '@/hooks'
 
 interface MenuRow {
@@ -284,12 +285,7 @@ const MenuMasterPage: React.FC = () => {
 
   return (
     <div>
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-        <span>System Admin</span>
-        <span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>Menu Configuration</span>
-      </div>
+      <PageBreadcrumb parent="System Admin" current="Menu Configuration" />
 
       {/* Top bar: stat cards (left) + actions (right) */}
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">

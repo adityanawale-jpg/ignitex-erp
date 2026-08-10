@@ -3,6 +3,7 @@ import toast from 'react-hot-toast'
 import { Save, RefreshCw, Shield, ChevronRight, ChevronDown, AlertCircle } from 'lucide-react'
 import { dynamicApi } from '@/api/apiService'
 import PageHeader from '@/components/common/PageHeader'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 import { usePermission } from '@/hooks'
 
 interface Role {
@@ -263,11 +264,7 @@ const PermissionMasterPage: React.FC = () => {
 
   return (
     <div>
-      <div className="flex items-center gap-2 text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-        <span>System Admin</span>
-        <span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>User Permission Management</span>
-      </div>
+      <PageBreadcrumb parent="System Admin" current="User Permission Management" />
       <PageHeader
         breadcrumbItems={[]}
         title="User Permission Management"

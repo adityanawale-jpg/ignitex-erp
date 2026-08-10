@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { LogIn, CheckCircle, XCircle, Calendar, Search, RefreshCw, X, Monitor, Shield } from 'lucide-react'
 import { apiService } from '@/api/apiService'
 import toast from 'react-hot-toast'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 
 interface LoginLog {
   id: number
@@ -80,11 +81,7 @@ const LoginLogsPage: React.FC = () => {
 
   return (
     <div>
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-        <span>System Admin</span><span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>User Login Logs</span>
-      </div>
+      <PageBreadcrumb parent="System Admin" current="User Login Logs" />
 
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-5">

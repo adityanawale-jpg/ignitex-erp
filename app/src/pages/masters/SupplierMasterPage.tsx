@@ -15,6 +15,7 @@ import Modal                  from '@/components/common/Modal'
 import Badge                  from '@/components/common/Badge'
 import ConfirmDialog          from '@/components/common/ConfirmDialog'
 import DeactivateReasonDialog from '@/components/common/DeactivateReasonDialog'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 import { formatDate, formatDateTime, exportToCSV, exportToExcel, exportToPDF } from '@/utils/helpers'
 import { getLovMany } from '@/utils/lovCache'
 import { apiService, getFileUrl } from '@/api/apiService'
@@ -1505,10 +1506,7 @@ const SupplierMasterPage: React.FC = () => {
   // ── Render ────────────────────────────────────────────────────
   return (
     <div>
-      <div className="flex items-center gap-2 text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-        <span>Masters</span><span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>Supplier Master</span>
-      </div>
+      <PageBreadcrumb parent="Masters" current="Supplier Master" />
 
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 pl-1">

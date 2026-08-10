@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { apiService } from '@/api/apiService'
 import Badge from '@/components/common/Badge'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 import { getInitials } from '@/utils/helpers'
 import { usePermission, useAppDispatch, useAppSelector } from '@/hooks'
 import { fetchProfileAsync } from '@/redux/slices/authSlice'
@@ -197,12 +198,7 @@ const UserRoleAssignmentPage: React.FC = () => {
   return (
     <div className="flex flex-col h-full">
 
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-        <span>System Admin</span>
-        <span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>User-Role Assignment</span>
-      </div>
+      <PageBreadcrumb parent="System Admin" current="User-Role Assignment" />
 
       {/* Top bar */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">

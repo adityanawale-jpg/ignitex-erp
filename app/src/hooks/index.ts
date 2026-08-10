@@ -1,5 +1,6 @@
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import type { RefObject } from 'react';
 import type { RootState, AppDispatch } from '@/redux/store';
 import type { MenuItem } from '@/redux/slices/authSlice';
 
@@ -42,6 +43,65 @@ export function useApi<T>(
   }, [apiCall]);
 
   return { data, loading, error, execute, setData };
+}
+
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled]):not([type="hidden"])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',');
+
+/**
+ * Keep Tab focus inside an open overlay and restore it to the trigger on close.
+ * Without this a keyboard user can tab straight through to the page behind a dialog.
+ *
+ * @param isOpen        whether the overlay is currently rendered
+ * @param containerRef  element that should hold focus
+ * @param autoFocus     focus the first control on open (default true)
+ */
+export function useFocusTrap(
+  isOpen: boolean,
+  containerRef: RefObject<HTMLElement | null>,
+  autoFocus = true
+) {
+  useEffect(() => {
+    if (!isOpen) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+
+    const focusable = () =>
+      Array.from(containerRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR) ?? [])
+        .filter((el) => el.offsetParent !== null);
+
+    if (autoFocus) focusable()[0]?.focus();
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      const items = focusable();
+      if (!items.length) return;
+
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      const inside = containerRef.current?.contains(active as Node);
+
+      if (e.shiftKey && (active === first || !inside)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      previouslyFocused?.focus?.();
+    };
+  }, [isOpen, containerRef, autoFocus]);
 }
 
 /**

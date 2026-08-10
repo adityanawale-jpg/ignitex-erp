@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { CubeIcon, SparklesIcon } from '@heroicons/react/24/outline'
 import CustomerPriceMetalTab from './customerPrice/CustomerPriceMetalTab'
 import CustomerPriceStoneTab from './customerPrice/CustomerPriceStoneTab'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 
 type TabId = 'METAL' | 'STONE'
 
@@ -21,12 +22,7 @@ const CustomerPriceMasterPage: React.FC = () => {
     <div>
       {!formOpen && (
         <>
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-            <span>Masters</span>
-            <span>/</span>
-            <span style={{ color: 'var(--accent-gold)' }}>Customer Price Master</span>
-          </div>
+          <PageBreadcrumb parent="Masters" current="Customer Price Master" />
 
           {/* Tab bar */}
           <div className="flex border-b mb-5" style={{ borderColor: 'var(--border-color)' }}>

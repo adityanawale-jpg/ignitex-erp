@@ -5,6 +5,7 @@ import {
   ArrowPathIcon, ChevronDownIcon, ChevronUpIcon,
 } from '@heroicons/react/24/outline'
 import { apiService } from '@/api/apiService'
+import PageBreadcrumb from '@/components/common/PageBreadcrumb'
 
 // ─────────────────────────────────────────────────────────────────
 // Types
@@ -229,11 +230,7 @@ export default function WorkflowConfigPage() {
 
   return (
     <div className="p-4 sm:p-6">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs mb-4 text-[var(--text-muted)]">
-        <span>Settings</span><span>/</span>
-        <span style={{ color: 'var(--accent-gold)' }}>Workflow Configuration</span>
-      </div>
+      <PageBreadcrumb parent="Settings" current="Workflow Configuration" />
 
       <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
         <div>

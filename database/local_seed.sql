@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict rYQq5sQfTevOsyqVccWe0pOYEA0d0qteU1jDFTfKd5paBc9jgbi3et9P4LUxyfK
+\restrict gPVaPJ5IvixeTfgMBggIH9wJn0clbaUGATaJeBDDVBWafLLIcmrer7M8pqgcjtk
 
 -- Dumped from database version 16.14
 -- Dumped by pg_dump version 16.14
@@ -459,11 +459,6 @@ FROM user_master u
 WHERE u.employee_id = :userid AND u.user_status = TRUE
 ', 'Login user fetch query', 'query', true, '2026-08-06 11:17:22.384563', '2026-08-06 11:17:25.998575');
 INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (2, 'user_list_get', 'SELECT u.user_id, u.employee_id, u.first_name, u.last_name, CONCAT(u.first_name, '' '', COALESCE(u.last_name, '''')) AS full_name, u.emp_email, u.mobile_number, u.user_status, u.department_id, u.designation, u.created_at FROM user_master u WHERE u.user_status = TRUE ORDER BY u.first_name, u.last_name', 'Get all active users', 'query', true, '2026-08-06 11:17:22.384563', '2026-08-06 11:17:22.384563');
-INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (3, 'menu_get', 'SELECT m.*, rm.can_view, rm.can_create, rm.can_update, rm.can_delete, rm.can_print, rm.can_export
-   FROM menu_master m
-   LEFT JOIN role_menu_mapping rm ON m.id = rm.menu_id AND rm.role_id = :role_id
-   WHERE m.is_active = TRUE
-   ORDER BY m.menu_level, m.menu_order', 'Get menus by role', 'query', true, '2026-08-06 11:17:22.384563', '2026-08-06 11:17:22.384563');
 INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (4, 'party_list_get', 'SELECT * FROM party_master WHERE is_active = TRUE ORDER BY party_name', 'Get all active parties', 'query', true, '2026-08-06 11:17:22.384563', '2026-08-06 11:17:22.384563');
 INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (5, 'party_by_id_get', 'SELECT * FROM party_master WHERE id = :id AND is_active = TRUE', 'Get party by ID', 'query', true, '2026-08-06 11:17:22.384563', '2026-08-06 11:17:22.384563');
 INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (9, 'lookup_by_type_get', 'SELECT * FROM master_lookup WHERE lookup_type = :lookup_type AND is_active = TRUE ORDER BY display_order', 'Get lookups by type', 'query', true, '2026-08-06 11:17:22.384563', '2026-08-06 11:17:22.384563');
@@ -506,6 +501,11 @@ WHERE iv.item_id = :item_id AND iv.is_active = TRUE
 ORDER BY iv.sku_code
 ', 'Variants for an item', 'query', true, '2026-08-06 11:17:23.092087', '2026-08-06 11:17:23.092087');
 INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (32, 'fg_item_update', 'UPDATE fg_item_master SET manufacturing_name=:manufacturing_name, jewellery_type=:jewellery_type, sku_type=:sku_type, gender=:gender, tech_type=:tech_type, manufacturing_level=:manufacturing_level, occasion=:occasion, group_sales=:group_sales, sub_category=:sub_category, product_category=:product_category, status=:status, uom1=:uom1, uom2=:uom2, video_upload=:video_upload, video_360=:video_360, updated_at=CURRENT_TIMESTAMP WHERE id=:id RETURNING *', 'Update FG item classification', 'query', true, '2026-08-06 11:17:23.092087', '2026-08-06 11:17:23.225116');
+INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (3, 'menu_get', 'SELECT m.*, rm.can_view, rm.can_create, rm.can_update, rm.can_delete, rm.can_print, rm.can_export
+   FROM menu_master m
+   LEFT JOIN role_menu_mapping rm ON m.id = rm.menu_id AND rm.role_id = :role_id
+   WHERE m.is_active = TRUE
+   ORDER BY m.menu_level, m.menu_order', 'Get menus by role', 'query', true, '2026-08-06 11:17:22.384563', '2026-08-06 11:17:22.384563');
 INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (37, 'fg_variant_toggle', 'UPDATE fg_item_variant SET is_active = NOT is_active, updated_at=CURRENT_TIMESTAMP WHERE id=:id RETURNING id, sku_code, is_active', 'Toggle variant status', 'query', true, '2026-08-06 11:17:23.092087', '2026-08-06 11:17:23.092087');
 INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (46, 'fg_item_list_count', 'SELECT COUNT(*)::int AS total FROM fg_item_master i WHERE (i.is_active = CASE WHEN :status = ''active'' THEN TRUE WHEN :status = ''inactive'' THEN FALSE ELSE i.is_active END) AND (COALESCE(:search, '''') = '''' OR i.design_code ILIKE ''%'' || :search || ''%'' OR i.product_name ILIKE ''%'' || :search || ''%'' OR i.manufacturing_name ILIKE ''%'' || :search || ''%'' OR i.collection_name ILIKE ''%'' || :search || ''%'')', 'Count FG items with search + status filter', 'query', true, '2026-08-06 11:17:23.276755', '2026-08-06 11:17:23.276755');
 INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (47, 'fg_item_stats', 'SELECT COUNT(CASE WHEN is_active = TRUE THEN 1 END)::int AS active, COUNT(CASE WHEN is_active = FALSE THEN 1 END)::int AS inactive FROM fg_item_master', 'FG item active / inactive totals', 'query', true, '2026-08-06 11:17:23.278336', '2026-08-06 11:17:23.278336');
@@ -1522,6 +1522,52 @@ UPDATE fin_item_variant SET
 WHERE id = :id
 RETURNING *
 ', 'Update Finding variant', 'query', true, '2026-08-06 11:17:24.91224', '2026-08-06 11:17:24.91224');
+INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (224, 'menu_master_list_get', 'SELECT m.id, m.parent_id, m.menu_code, m.menu_name, m.menu_url, m.menu_icon, m.menu_order, m.menu_level, m.is_active, m.created_at, pm.menu_name as parent_name FROM menu_master m LEFT JOIN menu_master pm ON pm.id = m.parent_id ORDER BY m.menu_level, m.menu_order, m.id', 'Get all menus with parent name', 'query', true, '2026-08-10 04:56:50.504111', '2026-08-10 04:56:50.504111');
+INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (225, 'menu_master_create', 'INSERT INTO menu_master (parent_id, menu_code, menu_name, menu_url, menu_icon, menu_order, menu_level, is_active) VALUES (:parent_id, :menu_code, :menu_name, :menu_url, :menu_icon, :menu_order, :menu_level, :is_active) RETURNING *', 'Create new menu item', 'query', true, '2026-08-10 04:56:50.504111', '2026-08-10 04:56:50.504111');
+INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (226, 'menu_master_update', 'UPDATE menu_master SET parent_id=:parent_id, menu_name=:menu_name, menu_url=:menu_url, menu_icon=:menu_icon, menu_order=:menu_order, menu_level=:menu_level, is_active=:is_active WHERE id=:id RETURNING *', 'Update menu item', 'query', true, '2026-08-10 04:56:50.504111', '2026-08-10 04:56:50.504111');
+INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (227, 'menu_master_delete', 'UPDATE menu_master SET is_active=FALSE WHERE id=:id RETURNING id', 'Soft delete menu item', 'query', true, '2026-08-10 04:56:50.504111', '2026-08-10 04:56:50.504111');
+INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (229, 'role_master_create', 'INSERT INTO role_master (role_code, role_name, description, is_active) VALUES (:role_code, :role_name, :description, :is_active) RETURNING *', 'Create new role', 'query', true, '2026-08-10 04:56:50.504111', '2026-08-10 04:56:50.504111');
+INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (231, 'role_master_delete', 'UPDATE role_master SET is_active=FALSE, updated_at=CURRENT_TIMESTAMP WHERE id=:id RETURNING id', 'Soft delete role', 'query', true, '2026-08-10 04:56:50.504111', '2026-08-10 04:56:50.504111');
+INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (234, 'permission_remove', 'DELETE FROM role_menu_mapping WHERE role_id=:role_id AND menu_id=:menu_id RETURNING id', 'Remove a role-menu permission mapping', 'query', true, '2026-08-10 04:56:50.504111', '2026-08-10 04:56:50.504111');
+INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (233, 'permission_upsert', 'INSERT INTO role_menu_mapping
+     (role_id, menu_id, can_view, can_create, can_update, can_delete, can_print, can_export, is_active)
+   VALUES
+     (:role_id, :menu_id, :can_view, :can_create, :can_update, :can_delete, :can_print, :can_export, TRUE)
+   ON CONFLICT (role_id, menu_id) DO UPDATE SET
+     can_view   = EXCLUDED.can_view,
+     can_create = EXCLUDED.can_create,
+     can_update = EXCLUDED.can_update,
+     can_delete = EXCLUDED.can_delete,
+     can_print  = EXCLUDED.can_print,
+     can_export = EXCLUDED.can_export,
+     is_active  = TRUE
+   RETURNING *', 'Upsert a single role-menu permission row', 'query', true, '2026-08-10 04:56:50.504111', '2026-08-10 04:56:50.504111');
+INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (232, 'permission_menus_by_role_get', 'SELECT
+     m.id          AS menu_id,
+     m.menu_code,
+     m.menu_name,
+     m.parent_id,
+     m.menu_level,
+     m.menu_order,
+     pm.menu_name  AS parent_name,
+     COALESCE(rm.can_view,   FALSE) AS can_view,
+     COALESCE(rm.can_create, FALSE) AS can_create,
+     COALESCE(rm.can_update, FALSE) AS can_update,
+     COALESCE(rm.can_delete, FALSE) AS can_delete,
+     COALESCE(rm.can_print,  FALSE) AS can_print,
+     COALESCE(rm.can_export, FALSE) AS can_export
+   FROM menu_master m
+   LEFT JOIN role_menu_mapping rm
+     ON m.id = rm.menu_id AND rm.role_id = :role_id
+   LEFT JOIN menu_master pm
+     ON pm.id = m.parent_id AND pm.is_active = TRUE
+   WHERE m.is_active = TRUE
+     AND (m.parent_id IS NULL OR m.parent_id IN (
+       SELECT id FROM menu_master WHERE is_active = TRUE
+     ))
+   ORDER BY m.menu_level, m.menu_order', 'Get all menus with permission flags for a specific role', 'query', true, '2026-08-10 04:56:50.504111', '2026-08-10 04:56:50.504111');
+INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (228, 'role_master_list_get', 'SELECT id, role_code, role_name, description, is_active, created_at, updated_at FROM role_master ORDER BY id', 'Get all roles', 'query', true, '2026-08-10 04:56:50.504111', '2026-08-10 04:56:50.504111');
+INSERT INTO public.project_config (id, key_code, key_value, description, config_type, is_active, created_at, updated_at) VALUES (230, 'role_master_update', 'UPDATE role_master SET role_name=:role_name, description=:description, is_active=:is_active, updated_at=CURRENT_TIMESTAMP WHERE id=:id RETURNING *', 'Update role', 'query', true, '2026-08-10 04:56:50.504111', '2026-08-10 04:56:50.504111');
 
 
 --
@@ -1930,7 +1976,7 @@ INSERT INTO public.role_menu_mapping (id, role_id, menu_id, can_view, can_create
 
 INSERT INTO public.user_master (user_id, employee_id, password_hash, first_name, last_name, emp_email, mobile_number, profile_image, department_id, designation, manager_id, user_status, jwt_token, jwt_token_update, start_date, expiry_date, timezone, language, last_login_at, login_ip, created_by, created_at, updated_by, updated_at, inactive_date, inactive_reason, reset_otp_hash, reset_otp_expiry, reset_otp_attempts, reset_token, reset_token_expiry, activation_token, activation_token_expiry) VALUES (2, 'EMP002', '$2b$10$nNh48ihKHGGlYpPeHuyn8uWykZ3x5BPjkjXGpTtqFjzzEgmigkhn6', 'Store', 'Manager', 'manager@ignitex.ai', NULL, NULL, NULL, NULL, NULL, true, NULL, NULL, NULL, NULL, 'Asia/Kolkata', 'en', NULL, NULL, NULL, '2026-08-06 11:17:22.360902+00', NULL, '2026-08-06 11:17:22.360902+00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL);
 INSERT INTO public.user_master (user_id, employee_id, password_hash, first_name, last_name, emp_email, mobile_number, profile_image, department_id, designation, manager_id, user_status, jwt_token, jwt_token_update, start_date, expiry_date, timezone, language, last_login_at, login_ip, created_by, created_at, updated_by, updated_at, inactive_date, inactive_reason, reset_otp_hash, reset_otp_expiry, reset_otp_attempts, reset_token, reset_token_expiry, activation_token, activation_token_expiry) VALUES (3, 'EMP003', '$2b$10$nNh48ihKHGGlYpPeHuyn8uWykZ3x5BPjkjXGpTtqFjzzEgmigkhn6', 'Sales', 'Executive', 'sales@ignitex.ai', NULL, NULL, NULL, NULL, NULL, true, NULL, NULL, NULL, NULL, 'Asia/Kolkata', 'en', NULL, NULL, NULL, '2026-08-06 11:17:22.360902+00', NULL, '2026-08-06 11:17:22.360902+00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL);
-INSERT INTO public.user_master (user_id, employee_id, password_hash, first_name, last_name, emp_email, mobile_number, profile_image, department_id, designation, manager_id, user_status, jwt_token, jwt_token_update, start_date, expiry_date, timezone, language, last_login_at, login_ip, created_by, created_at, updated_by, updated_at, inactive_date, inactive_reason, reset_otp_hash, reset_otp_expiry, reset_otp_attempts, reset_token, reset_token_expiry, activation_token, activation_token_expiry) VALUES (1, 'EMP001', '$2b$10$nNh48ihKHGGlYpPeHuyn8uWykZ3x5BPjkjXGpTtqFjzzEgmigkhn6', 'System', 'Administrator', 'admin@ignitex.ai', NULL, NULL, NULL, NULL, NULL, true, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1wbG95ZWVfaWQiOiJFTVAwMDEiLCJmaXJzdF9uYW1lIjoiU3lzdGVtIiwibGFzdF9uYW1lIjoiQWRtaW5pc3RyYXRvciIsImlhdCI6MTc4NjAxNjAyMSwiZXhwIjoxNzg2MDQ0ODIxfQ.1acAkfUAutJO2Uv-HOVFlMPZFFvcdhp1zc3Ibdyyhag', '2026-08-06 19:33:41.3+00', NULL, NULL, 'Asia/Kolkata', 'en', '2026-08-06 11:33:41.301447+00', '::1', NULL, '2026-08-06 11:17:22.360902+00', NULL, '2026-08-06 11:33:41.301447+00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL);
+INSERT INTO public.user_master (user_id, employee_id, password_hash, first_name, last_name, emp_email, mobile_number, profile_image, department_id, designation, manager_id, user_status, jwt_token, jwt_token_update, start_date, expiry_date, timezone, language, last_login_at, login_ip, created_by, created_at, updated_by, updated_at, inactive_date, inactive_reason, reset_otp_hash, reset_otp_expiry, reset_otp_attempts, reset_token, reset_token_expiry, activation_token, activation_token_expiry) VALUES (1, 'EMP001', '$2b$10$nNh48ihKHGGlYpPeHuyn8uWykZ3x5BPjkjXGpTtqFjzzEgmigkhn6', 'System', 'Administrator', 'admin@ignitex.ai', NULL, NULL, NULL, NULL, NULL, true, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1wbG95ZWVfaWQiOiJFTVAwMDEiLCJmaXJzdF9uYW1lIjoiU3lzdGVtIiwibGFzdF9uYW1lIjoiQWRtaW5pc3RyYXRvciIsImlhdCI6MTc4NjMzODEwMywiZXhwIjoxNzg2MzY2OTAzfQ.8opec_J7gM5hol798RZVLGCuUK_aFC8J9CkhL6YH7Y8', '2026-08-10 13:01:43.32+00', NULL, NULL, 'Asia/Kolkata', 'en', '2026-08-10 05:01:43.323785+00', '::1', NULL, '2026-08-06 11:17:22.360902+00', NULL, '2026-08-10 05:01:43.323785+00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL);
 
 
 --
@@ -1971,7 +2017,7 @@ SELECT pg_catalog.setval('public.menu_master_id_seq', 208, true);
 -- Name: project_config_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.project_config_id_seq', 223, true);
+SELECT pg_catalog.setval('public.project_config_id_seq', 234, true);
 
 
 --
@@ -2013,5 +2059,5 @@ SELECT pg_catalog.setval('public.user_role_id_seq', 9, true);
 -- PostgreSQL database dump complete
 --
 
-\unrestrict rYQq5sQfTevOsyqVccWe0pOYEA0d0qteU1jDFTfKd5paBc9jgbi3et9P4LUxyfK
+\unrestrict gPVaPJ5IvixeTfgMBggIH9wJn0clbaUGATaJeBDDVBWafLLIcmrer7M8pqgcjtk
 
